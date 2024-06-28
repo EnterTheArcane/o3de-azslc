@@ -79,5 +79,4 @@ namespace AZ::ShaderCompiler
         }
         return { stream.str(), registerString };
     }
-    
 }

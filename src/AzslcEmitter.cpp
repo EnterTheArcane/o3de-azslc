@@ -97,6 +97,7 @@ namespace AZ::ShaderCompiler
         const RootSigDesc rootSig = BuildSignatureDescription(options, numOf32bitConst);
 
         SetupScopeMigrations(options);
+        SetupOptionsSpecializationId(options);
 
         // Emit global attributes
         for (const auto& attr : m_ir->m_symbols.GetGlobalAttributeList())
@@ -379,17 +380,24 @@ namespace AZ::ShaderCompiler
     {
         assert(m_ir->GetKind(symbolUid) == Kind::Variable);
         assert(IsTopLevelThroughTranslation(symbolUid));
-
         auto* varInfo = m_ir->GetSymbolSubAs<VarInfo>(symbolUid.GetName());
 
-        EmitGetShaderKeyFunctionDeclaration(symbolUid, varInfo->GetTypeRefInfo());
-        m_out << ";\n\n";
+        if (options.m_useSpecializationConstantsForOptions && varInfo->m_specializationId >= 0)
+        {
+            m_out << GetPlatformEmitter().GetSpecializationConstant(*this, symbolUid, options);
+        }
+        else
+        {
 
-        m_out << "#if defined(" + JoinAllNestedNamesWithUnderscore(symbolUid.m_name) + "_OPTION_DEF)\n";
-        EmitVariableDeclaration(*varInfo, symbolUid, options, VarDeclHasFlag(VarDeclHas::OptionDefine));
-        m_out << "_OPTION_DEF ;\n#else\n";
-        EmitVariableDeclaration(*varInfo, symbolUid, options, VarDeclHasFlag(VarDeclHas::OptionDefine) | VarDeclHas::Initializer);
-        m_out << ";\n#endif\n";
+            EmitGetShaderKeyFunctionDeclaration(symbolUid, varInfo->GetTypeRefInfo());
+            m_out << ";\n\n";
+
+            m_out << "#if defined(" + JoinAllNestedNamesWithUnderscore(symbolUid.m_name) + "_OPTION_DEF)\n";
+            EmitVariableDeclaration(*varInfo, symbolUid, options, VarDeclHasFlag(VarDeclHas::OptionDefine));
+            m_out << "_OPTION_DEF ;\n#else\n";
+            EmitVariableDeclaration(*varInfo, symbolUid, options, VarDeclHasFlag(VarDeclHas::OptionDefine) | VarDeclHas::Initializer);
+            m_out << ";\n#endif\n";
+        }
     }
 
     void CodeEmitter::EmitShaderVariantOptionGetters(const Options& options) const
@@ -413,15 +421,18 @@ namespace AZ::ShaderCompiler
             m_out << "// Generated code: ShaderVariantOptions fallback value getters:\n";
 
             auto shaderOptions = GetVariantList(options, true);
-            auto shaderOptionIndex = 0;
-
-            for (const auto& [uid, varInfo] : symbols)
+            for (uint32_t shaderOptionIndex = 0; shaderOptionIndex < symbols.size(); ++shaderOptionIndex)
             {
+                const auto& [uid, varInfo] = symbols[shaderOptionIndex];
+                if (options.m_useSpecializationConstantsForOptions && varInfo->m_specializationId >= 0)
+                {
+                    continue;
+                }
+
                 const auto keySizeInBits = shaderOptions["ShaderOptions"][shaderOptionIndex]["keySize"].asUInt();
                 const auto keyOffsetBits = shaderOptions["ShaderOptions"][shaderOptionIndex]["keyOffset"].asUInt();
                 const auto defaultValue = shaderOptions["ShaderOptions"][shaderOptionIndex]["defaultValue"].asString();
 
-                shaderOptionIndex++;
                 EmitGetShaderKeyFunction(m_shaderVariantFallbackUid, uid, keySizeInBits, keyOffsetBits, defaultValue, varInfo->GetTypeRefInfo());
             }
         }
@@ -691,6 +702,11 @@ namespace AZ::ShaderCompiler
         else if (attrInfo.m_attribute == "range")
         {
             // Reserved for integer type option variables. Do not re-emit
+            outstream << "// original attribute: [[" << attrInfo << "]]\n ";
+        }
+        else if (attrInfo.m_attribute == "no_specialization")
+        {
+            // Reserved for avoiding specialization of a shader option. Do not re-emit
             outstream << "// original attribute: [[" << attrInfo << "]]\n ";
         }
 
