@@ -23,7 +23,7 @@ namespace StdFs = std::filesystem;
 // For large features or milestones. Minor version allows for breaking changes. Existing tests can change.
 #define AZSLC_MINOR "8"   // last change: introduction of class inheritance
 // For small features or bug fixes. They cannot introduce breaking changes. Existing tests shouldn't change.
-#define AZSLC_REVISION "19"  // last change: fix crash in option ranks analysis in case of bodiless functions
+#define AZSLC_REVISION "20"  // last change: update antlrv4 to 4.13.2
 
 namespace AZ::ShaderCompiler
 {
@@ -43,11 +43,11 @@ namespace AZ::ShaderCompiler
         size_t maxToken = vocabulary.getMaxTokenType();
         for (size_t ii = 0; ii < maxToken; ++ii)
         {
-            string token = vocabulary.getLiteralName(ii);
+            string_view token = vocabulary.getLiteralName(ii);
             token = Trim(token, "\"'"); // because AntlR gives us e.g "'float'"
             if (!token.empty())         // empty when there is a complex rule (not a straight unconditional keyword)
             {
-                TypeClass tc = AnalyzeTypeClass(TentativeName{token});
+                TypeClass tc = AnalyzeTypeClass(TentativeName{string{token}});
                 bool accept = true;
                 if constexpr (!is_same_v<std::nullptr_t, std::remove_reference_t<decltype(tcFilter)>>)
                 {
@@ -56,7 +56,7 @@ namespace AZ::ShaderCompiler
 
                 if (tc == TypeClass::IsNotType)
                 {
-                    notTypes1.insert(token);
+                    notTypes1.insert(string{token});
                 }
 
                 if (accept)
@@ -220,30 +220,29 @@ namespace AZ::ShaderCompiler::Main
     /// This function will support the --ast option. It uses an AntlR facility and prettifies it.
     void PrintAst(tree::ParseTree* tree, azslParser& parser)
     {
-        // not sure why wstring, but I'm going along the AntlR's doc example.
-        std::wstring s = antlrcpp::s2ws(tree->toStringTree(&parser));
+        std::string s = tree->toStringTree(&parser);
         // hopefully easy to read indentator
-        std::wstring curindent = L"";
-        for (wchar_t c : s)
+        std::string curindent = "";
+        for (char c : s)
         {
-            if (c == L'(')
+            if (c == '(')
             {
-                std::wcout << "\n";
-                curindent += L"  ";
-                std::wcout << curindent << c;
+                std::cout << "\n";
+                curindent += "  ";
+                std::cout << curindent << c;
             }
-            else if (c == L')')
+            else if (c == ')')
             {
-                std::wcout << c << "\n";
+                std::cout << c << "\n";
                 curindent = curindent.substr(0, std::max(2_sz, curindent.size()) - 2);
-                std::wcout << curindent;
+                std::cout << curindent;
             }
             else
             {
-                std::wcout << c;
+                std::cout << c;
             }
         }
-        std::wcout << std::endl; // flush
+        std::cout << std::endl; // flush
     }
 
     /// this function supports the --visitsym option

@@ -1670,7 +1670,7 @@ namespace AZ::ShaderCompiler
     optional<int64_t> SemanticOrchestrator::TryFoldSRGSemantic(azslParser::SrgSemanticContext* ctx, size_t semanticTokenType, bool required)
     {
         // const ref used, to extend the returned object's temporary life
-        const string& intrinsicVarNameFromLexer = m_lexer->getVocabulary().getLiteralName(semanticTokenType);
+        string_view intrinsicVarNameFromLexer = m_lexer->getVocabulary().getLiteralName(semanticTokenType);
         string_view intrinsicVarName = Trim(intrinsicVarNameFromLexer, "\'");
 
         auto semanticSymbol = LookupSymbol(UnqualifiedNameView{ intrinsicVarName });

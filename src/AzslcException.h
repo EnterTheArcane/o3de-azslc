@@ -155,7 +155,7 @@ namespace AZ::ShaderCompiler
             BakeErrorMessage();
         }
 
-        const char* what() const NOEXCEPT
+        const char* what() const noexcept
         {
             return m_errorMessage.c_str();
         }

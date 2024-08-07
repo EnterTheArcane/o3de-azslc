@@ -13,8 +13,8 @@ FetchContent_Declare(
 # Antlr4 external dependency
 FetchContent_Declare(
   antlr4
-  GIT_REPOSITORY https://github.com/o3de/antlr4.git
-  GIT_TAG o3de-4.9.3
+  GIT_REPOSITORY https://github.com/o3de/antlr4/
+  GIT_TAG o3de-4.13.2
   SOURCE_SUBDIR runtime/Cpp
   CMAKE_ARGS "-DCMAKE_BUILD_TYPE=Release"
   GIT_SHALLOW TRUE
