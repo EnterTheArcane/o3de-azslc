@@ -15,3 +15,7 @@ build
 /src/.antlr/azslParser.java
 /src/.antlr/azslParser.tokens
 /tests/testfuncs.pyc
+
+.idea/
+cmake-build*/
+dist/
