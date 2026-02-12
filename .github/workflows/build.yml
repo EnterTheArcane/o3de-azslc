@@ -18,12 +18,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [Linux, Mac, Windows]
-        architecture: [ARM, X64]
         include:
           - platform: Linux
+            architecture: ARM
+            image: ubuntu-24.04-arm
+          - platform: Linux
+            architecture: X64
             image: ubuntu-24.04
           - platform: Mac
+            architecture: ARM
+            image: macos-15
+          - platform: Mac
+            architecture: X64
             image: macos-15
           - platform: Windows
             architecture: ARM
