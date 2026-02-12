@@ -3,11 +3,11 @@ include(FetchContent)
 set(JSONCPP_WITH_TESTS OFF CACHE BOOL "")
 
 FetchContent_Declare(jsoncpp
-    URL https://github.com/open-source-parsers/jsoncpp/archive/24682e37bf1425455b45e7db69dbdbcd30aec7dd.tar.gz
-    URL_HASH SHA256=2c542011d72ff5bdd582c6d69b595b7256ddbaa7ea46556374ee537aa16a18c7 # v1.6.2
+    URL https://github.com/open-source-parsers/jsoncpp/archive/refs/tags/1.9.6.tar.gz
+    URL_HASH SHA256=f93b6dd7ce796b13d02c108bc9f79812245a82e577581c4c9aabe57075c90ea2
     DOWNLOAD_NO_PROGRESS ON
 )
 
 FetchContent_MakeAvailable(jsoncpp)
 
-add_library(External::jsoncpp ALIAS jsoncpp_lib_static)
+add_library(External::jsoncpp ALIAS jsoncpp_static)
