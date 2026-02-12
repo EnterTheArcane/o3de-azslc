@@ -65,8 +65,8 @@ jobs:
           pip-install: -r requirements.txt
           cache: pip
 
-      - name: Setup Platform
-        run: pwsh -File Platform/${{ matrix.platform }}/RunnerSetup.ps1
+      # - name: Setup Platform
+      #   run: pwsh -File Platform/${{ matrix.platform }}/RunnerSetup.ps1
 
       - name: Configure
         env:
