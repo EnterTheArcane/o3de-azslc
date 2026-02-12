@@ -15,7 +15,7 @@ on:
 jobs:
   build:
     name: Build
-    uses: ./.github/workflows/build-and-test.yml
+    uses: ./.github/workflows/build.yml
     strategy:
       fail-fast: false
       matrix:

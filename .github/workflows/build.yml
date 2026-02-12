@@ -20,6 +20,9 @@ on:
       image:
         type: string
         required: false
+      test:
+        type: boolean
+        default: true
       upload-artifacts:
         type: boolean
         default: false
@@ -44,6 +47,10 @@ on:
         options:
           - ARM
           - X64
+      test:
+        description: Test
+        type: boolean
+        default: true
       upload-artifacts:
         description: Upload Artifacts
         type: boolean
@@ -102,6 +109,7 @@ jobs:
         run: cmake --build Build
 
       - name: Test
+        if: inputs.test
         run: >-
           ctest
           --test-dir Build
@@ -110,6 +118,7 @@ jobs:
           --output-junit ../TestResults.xml
 
       - name: Test Report
+        if: inputs.test
         uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637 # v2.5.0
         with:
           name: Tests (${{ inputs.platform }}-${{ inputs.architecture }})
