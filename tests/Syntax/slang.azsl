@@ -240,7 +240,7 @@ class PointLight : ILightEnv
 //
 // Instead, we will start with a type for *homogeneous* arrays of lights:
 //
-/* AZSLc: generic classes not supported for now (only generic functions)
+/* AZSLC: generic classes not supported for now (only generic functions)
 class LightArray<L : ILightEnv, let N : int> : ILightEnv
 */
 class LightArray : ILightEnv
@@ -291,7 +291,7 @@ class LightArray : ILightEnv
 // That said, we expect that future versions of Slang will make
 // defining composite types light this a bit less cumbersome.
 //
-/* AZSLc: not supported
+/* AZSLC: not supported
 struct LightPair<T : ILightEnv, U : ILightEnv> : ILightEnv
 */
 class LightPair : ILightEnv
@@ -350,7 +350,7 @@ struct PerModel
     float4x4    modelTransform;
     float4x4    inverseTransposeModelTransform;
 };
-// AZSLc: not AZSL
+// AZSLC: not AZSL
 //ParameterBlock<PerModel>    gModelParams;
 
 // We want our shader to work with any kind of lighting environment
@@ -361,19 +361,19 @@ struct PerModel
 // We handle this by defining a global generic type parameter for
 // our shader, and constrainting it to implement `ILightEnv`...
 //
-// AZSLc: not AZSL
+// AZSLC: not AZSL
 //type_param TLightEnv : ILightEnv;
 //
 // ... and then defining a parameter block that uses that type
 // parameter as the "element type" of the block:
 //
-// AZSLc: not AZSL
+// AZSLC: not AZSL
 //ParameterBlock<TLightEnv> gLightEnv;
 
 // Our handling of the material parameter for our shader
 // is quite similar to the case for the lighting environment:
 //
-// AZSLc: not AZSL
+// AZSLC: not AZSL
 //type_param TMaterial : IMaterial;
 //ParameterBlock<TMaterial>   gMaterial;
 
@@ -477,7 +477,7 @@ float4 fragmentMain(
     // will resolve to a concrete type too (e.g., `SimpleMaterial.BRDF`
     // which is an alias for `BlinnPhong`).
     //
-    // AZSLc: dot in slang is coloncolon in AZSL
+    // AZSLC: dot in slang is coloncolon in AZSL
     TMaterial::BRDF brdf = gMaterial.prepare(g);
 
     // Now that we've done the first step of material evaluation

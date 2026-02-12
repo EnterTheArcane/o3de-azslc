@@ -127,7 +127,7 @@ def buildDXC(thefile, compilerPath, silent, extraIncList, azslcArgs, dxcArgs, az
 
     stdout, ok = testfuncs.buildAndGet(thefile, compilerPath, silent, azslcArgs)
     if not ok:
-        if not silent: print (fg.RED+ style.BRIGHT+ "Failed to generate .hlsl file with AZSLc."+ style.RESET_ALL)
+        if not silent: print (fg.RED+ style.BRIGHT+ "Failed to generate .hlsl file with AZSLC."+ style.RESET_ALL)
         return buildFailed
 
     # HLSL CodeGen - add all extra includes from the list, supposing they're local to the target source file
@@ -178,7 +178,7 @@ def buildDXCCompute(thefile, compilerPath, silent, extraIncList, azslcArgs, dxcA
 
     stdout, ok = testfuncs.buildAndGet(thefile, compilerPath, silent, azslcArgs)
     if not ok:
-        if not silent: print (fg.RED+ style.BRIGHT+ "Failed to generate .hlsl file with AZSLc."+ style.RESET_ALL)
+        if not silent: print (fg.RED+ style.BRIGHT+ "Failed to generate .hlsl file with AZSLC."+ style.RESET_ALL)
         return buildFailed
 
     # HLSL CodeGen - add all extra includes from the list, supposing they're local to the target sourc file

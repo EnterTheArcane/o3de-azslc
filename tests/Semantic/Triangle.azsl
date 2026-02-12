@@ -12,7 +12,7 @@ ShaderResourceGroupSemantic BindingTrianglePerInstanceSRG
 
     // Setting this to greater than 0 designates the SRG using this semantic as a
     // ShaderVariantKey fallback. The choice of 128 bits is arbitrary and up to the
-    // user, but AZSLc will align it to 128 and error if the number of options exceeds
+    // user, but AZSLC will align it to 128 and error if the number of options exceeds
     // the aligned budget. The value is intended as a limit for the number of options
     // and is set by the shader author.
     ShaderVariantFallback = 128;

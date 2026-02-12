@@ -41,7 +41,7 @@ float4 PSPointSprite(PSSceneIn input) : SV_Target
 // These examples are only invalid when compiled with dxc for Shader Model 6 and later
 // Other compilers (fxc, Shader Model 5 or earlier) can compile some of them, but we keep
 //  them here to illustrate the differences in the supported grammar.
-// AZSLc will not error here, because the syntax is still valid
+// AZSLC will not error here, because the syntax is still valid
 
 // Expected DXC error: Semantic must be defined for all parameters of an entry function or patch constant function
 VS_OUTPUT InvalidVS1( float4 vPos : POSITION,

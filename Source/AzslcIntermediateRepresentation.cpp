@@ -100,7 +100,7 @@ namespace AZ::ShaderCompiler
             m_padToAttributeMutator.ProcessPadToAttribute(attrInfo);
             return false; //Do not store this attribute
         }
-        // The attribute has no special meaning to AZSLc, just pass it
+        // The attribute has no special meaning to AZSLC, just pass it
         return true;
     }
 
@@ -894,7 +894,7 @@ namespace AZ::ShaderCompiler
             if (!lineInfo || lineOfDeclaration == 0)
             {
                 // When the LineDirectiveInfo* is null (or at 0), it means We have detected a variable that was added
-                // by AZSLc itself. e.g. Root Constant padding, etc.
+                // by AZSLC itself. e.g. Root Constant padding, etc.
                 // In such case, this is not an issue We want to interfere with.
                 return {};
             }

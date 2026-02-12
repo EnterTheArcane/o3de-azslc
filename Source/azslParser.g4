@@ -21,10 +21,10 @@ topLevelDeclaration:
     |   attributedFunctionDefinition
     |   attributedFunctionDeclaration
     |   attributeSpecifierSequence
-    |   compilerExtensionStatement      // AZSLc specific
-    |   typeAliasingDefinitionStatement // AZSLc specific
-    |   attributedSrgDefinition         // AZSLc specific
-    |   attributedSrgSemantic           // AZSLc specific
+    |   compilerExtensionStatement      // AZSLC specific
+    |   typeAliasingDefinitionStatement // AZSLC specific
+    |   attributedSrgDefinition         // AZSLC specific
+    |   attributedSrgSemantic           // AZSLC specific
     |   Semi
 ;
 
@@ -242,7 +242,7 @@ embeddedStatement:
     |   Discard Semi # DiscardStatement
     |   Return Expr=expressionExt? Semi # ReturnStatement
 
-    // AZSLc specific
+    // AZSLC specific
     |   compilerExtensionStatement # ExtenstionStatement
     |   typeAliasingDefinitionStatement # TypeAliasingDefinitionStatementLabel
 ;

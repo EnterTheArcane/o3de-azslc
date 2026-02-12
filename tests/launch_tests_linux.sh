@@ -10,7 +10,7 @@
 azslc_binary=../bin/linux/release/azslc
 
 if [! -f "$azslc_binary"]; then
-  echo "AZSLc not found under $azslc_binary"
+  echo "AZSLC not found under $azslc_binary"
   exit 1
 fi
 

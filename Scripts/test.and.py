@@ -19,7 +19,7 @@ from argparse import ArgumentParser
 from os.path import join, normpath, basename
 import re
 import importlib
-sys.path.append("tests")
+sys.path.append("Tests")
 from tests.clr import *
 
 testList = ['Syntax', 'Semantic', 'Advanced', 'Samples']
@@ -52,7 +52,7 @@ if args.atomDev is not None:
 
 # Part 0 - Prerequisites
 print ( fg.CYAN   + style.BRIGHT + "*****************************************************" + style.RESET_ALL )
-print ( fg.CYAN   + style.BRIGHT + "                     Building AZSLc ..."               + style.RESET_ALL )
+print ( fg.CYAN   + style.BRIGHT + "                     Building AZSLC ..."               + style.RESET_ALL )
 print ( fg.CYAN   + style.BRIGHT + "*****************************************************" + style.RESET_ALL )
 
 missingCritical = 0

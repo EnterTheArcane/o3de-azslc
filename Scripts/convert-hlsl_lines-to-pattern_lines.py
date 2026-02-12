@@ -14,7 +14,7 @@ def GetPatternLineFromHlslLine(line):
     """
     Returns a string, with the pattern version of the input string.
     Example:
-    The following HLSL line produced by AZSLc:
+    The following HLSL line produced by AZSLC:
         float2 samplePos = ::PassSrg_GetSamplePosition ( IN . m_sampleIndex ) ;
     Will become like this when converted to pattern line as required by testhelper.verifyEmissionPattern():
         "float2 samplePos = :: PassSrg_GetSamplePosition ( IN . m_sampleIndex ) ;"
@@ -34,7 +34,7 @@ def GeneratePatternLinesFromHlslFile(filePath):
     """
     Returns all lines in the file named @filePath
     as pattern lines.
-    In general, @filePath is output HLSL code produced by AZSLc. 
+    In general, @filePath is output HLSL code produced by AZSLC. 
     """
     resultLines = []
     with io.open(filePath, "r", encoding="latin-1") as f:
@@ -45,13 +45,13 @@ def GeneratePatternLinesFromHlslFile(filePath):
 
 
 # The main purpose of this helper script is to take
-# an HLSL output produced by AZSLc and convert each line
+# an HLSL output produced by AZSLC and convert each line
 # into a pattern line. The idea is that the pattern
 # line version is what is used for emission validation.
 # The pattern line version is what is required when testhelper.verifyEmissionPattern() is called.
 #
 # Example:
-# The following HLSL line produced by AZSLc:
+# The following HLSL line produced by AZSLC:
 #     float2 samplePos = ::PassSrg_GetSamplePosition ( IN . m_sampleIndex ) ;
 # Will become like this when converted to pattern line as required by testhelper.verifyEmissionPattern():
 #     "float2 samplePos = :: PassSrg_GetSamplePosition ( IN . m_sampleIndex ) ;"

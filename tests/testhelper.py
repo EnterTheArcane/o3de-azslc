@@ -130,7 +130,7 @@ def compileAndExpectError(thefile, compilerPath, silent, argList):
     """
     This function will compile @thefile, with the given @argList.
     Returns 1 (success) if the compilation failed AND the error code of the runtime exception
-    produced by AZSLc matches the "#EC <code number>" expression found inside the comments of @thefile.
+    produced by AZSLC matches the "#EC <code number>" expression found inside the comments of @thefile.
     Otherwise returns 0 (failure).
     """
     global failList

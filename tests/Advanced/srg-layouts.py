@@ -830,7 +830,7 @@ def verifyPackingRelaxedUniqueIdx(thefile, compilerPath, silent):
         # Matches Storage Buffer 1 (VK) standard here:
         # https://github.com/Microsoft/DirectXShaderCompiler/blob/master/docs/SPIR-V.rst
 
-        # Note! Bacause AZSLc emits the resource indices in order SRVs/UAVs, then Samplers, then CBVs
+        # Note! Bacause AZSLC emits the resource indices in order SRVs/UAVs, then Samplers, then CBVs
         #  the indices (when using unique index) don't necessarily match the order of declaration.
         # Since the data is reflected this should not be a problem!
         # In fact, it verifies the consumer application is data driven and accepts the emitted register indices
@@ -909,7 +909,7 @@ def verifyPackingRelaxedUniqueIdxUseSpaces(thefile, compilerPath, silent):
         # Matches Storage Buffer 1 (VK) standard here:
         # https://github.com/Microsoft/DirectXShaderCompiler/blob/master/docs/SPIR-V.rst
 
-        # Note! Bacause AZSLc emits the resource indices in order SRVs/UAVs, then Samplers, then CBVs
+        # Note! Bacause AZSLC emits the resource indices in order SRVs/UAVs, then Samplers, then CBVs
         #  the indices (when using unique index) don't necessarily match the order of declaration.
         # Since the data is reflected this should not be a problem!
         # In fact, it verifies the consumer application is data driven and accepts the emitted register indices

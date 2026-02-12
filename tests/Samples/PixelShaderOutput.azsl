@@ -51,7 +51,7 @@ void MainPS_1_7() : SV_Target0
 {          
 }
 
-// AZSLc: We can't actually catch this type of error so we rely on the native shader compiler here.
+// AZSLC: We can't actually catch this type of error so we rely on the native shader compiler here.
 // Error: inside block entry of function MainPS_1_8 Instructions must be of an allowed type
 float4 MainPS_1_8() : SV_Target0
 {          
@@ -482,7 +482,7 @@ PSOut_Depth MainPS_Depth()
 }
 
 /*
- * Error: This shader is invalid, but AZSLc shouldn't crash trying to process it
+ * Error: This shader is invalid, but AZSLC shouldn't crash trying to process it
  */
  
 InvalidReturnType MainPS_Invalid() 

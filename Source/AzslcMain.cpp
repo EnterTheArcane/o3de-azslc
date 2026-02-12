@@ -348,7 +348,7 @@ int main(int argc, const char* argv[])
     cli.add_flag("--Zpr", Zpr, "Pack matrices in row-major order. Cannot be specified together with -Zpc.");
 
     bool packDx12 = false;
-    cli.add_flag("--pack-dx12", packDx12, "Pack buffers using strict DX12 packing rules. If not specified AZSLc will use relaxed packing rules.");
+    cli.add_flag("--pack-dx12", packDx12, "Pack buffers using strict DX12 packing rules. If not specified AZSLC will use relaxed packing rules.");
 
     bool packVulkan = false;
     cli.add_flag("--pack-vulkan", packVulkan, "Pack buffers using strict Vulkan packing rules (Vector-relaxed std140 for uniforms and std430 for storage buffers).");

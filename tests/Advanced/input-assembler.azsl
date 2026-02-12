@@ -53,7 +53,7 @@ VertexOutput3 MainVS3(VertexInput3 input, uint vtxIndex : SV_VertexID, float4 do
 }
 
 /*
- * Error: This shader is invalid, but AZSLc shouldn't crash trying to process it
+ * Error: This shader is invalid, but AZSLC shouldn't crash trying to process it
  */
  
 void MainVSInvalid(InvalidInputType input)

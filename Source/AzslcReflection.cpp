@@ -378,9 +378,9 @@ namespace AZ::ShaderCompiler
     void CodeReflection::DumpOutputMergerLayout(const char * const psEntry) const
     {
         Json::Value iaRoot(Json::objectValue);
-        iaRoot["meta"] = "Output Merger Layout exported by AZSLc";
+        iaRoot["meta"] = "Output Merger Layout exported by AZSLC";
         iaRoot["source"] = m_ir->OriginalSource();
-        iaRoot["material"] = "Output Merger Layout exported by AZSLc";
+        iaRoot["material"] = "Output Merger Layout exported by AZSLC";
 
         iaRoot["outputLayouts"] = GetOutputMergerLayout(psEntry);
         m_out << iaRoot;
@@ -389,7 +389,7 @@ namespace AZ::ShaderCompiler
     void CodeReflection::DumpShaderEntries() const
     {
         Json::Value entries(Json::objectValue);
-        entries["meta"] = "Shader entries exported by AZSLc";
+        entries["meta"] = "Shader entries exported by AZSLC";
         entries["source"] = m_ir->OriginalSource();
         entries["material"] = "Unknown material";
 
@@ -650,7 +650,7 @@ namespace AZ::ShaderCompiler
         RootSigDesc rootSig = BuildSignatureDescription(options, numOf32bitConst);
 
         Json::Value srgRoot(Json::objectValue);
-        srgRoot["meta"] = "SRGs layout exported by AZSLc";
+        srgRoot["meta"] = "SRGs layout exported by AZSLC";
         srgRoot["source"] = m_ir->OriginalSource();
 
         Json::Value srgLayouts(Json::arrayValue);

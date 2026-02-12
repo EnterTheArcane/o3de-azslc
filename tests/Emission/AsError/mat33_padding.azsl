@@ -1,6 +1,6 @@
 // This test case is used to validate that the exception code 131 is thrown.
 // Exception code 131 (IR_POTENTIAL_DX12_VS_VULKAN_ALIGNMENT_ERROR) means
-// that AZSLc detected data layout issues within struct, classes or SRGs
+// that AZSLC detected data layout issues within struct, classes or SRGs
 // that are known to produce different layout data by DXC when using
 // the command line option: -fvk-use-dx-layout
 // See https://github.com/o3de/o3de-azslc/issues/8

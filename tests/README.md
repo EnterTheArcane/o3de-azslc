@@ -10,7 +10,7 @@ is covered by the following license:
 > 
 > SPDX-License-Identifier: Apache-2.0 OR MIT
 
-# Using the tests 
+# Using the Tests 
 
 The tester program uses convention over configuration. 
 So you don't have to maintain a list of tests and their expected behavior, the test suite will test all shader code in all folders and determine the expected results based on test and directory naming conventions.

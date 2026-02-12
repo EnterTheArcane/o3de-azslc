@@ -16,7 +16,7 @@ struct S {
     T        f4;
 };
 
-// The attribute passes, but AZSLc will fail the test for another reason:
+// The attribute passes, but AZSLC will fail the test for another reason:
 // ERROR at semantic check: (20): global variable pcs cannot be non static (or extern or uniform). AZSL data binding model uses ShaderResourceGroup.
 [[vk::push_constant]]
 S pcs;

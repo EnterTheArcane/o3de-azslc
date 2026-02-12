@@ -1,4 +1,4 @@
-# AZSLc HowTo guide
+# AZSLC HowTo guide
 
 `TL;DR` Use azslc from command line (or process invoke) to translate .azsl files to .hlsl, or extract data such as symbols reference table, shader resource table layout, input assembly layout and output merger layout.
 
@@ -317,7 +317,7 @@ Emits the ShaderResourceGroup layout instead of the shader source. The data is a
 
 This option will print out on stdout a lisp-like tree of the syntax of an input program as parsed by AntlR.
 Example:
-`AZSLc\dev\bin\win_x64\Release>azslc.exe --ast ..\..\..\tests\Syntax\comma-separated-declarators.azsl`
+`AZSLC\dev\bin\win_x64\Release>azslc.exe --ast ..\..\..\tests\Syntax\comma-separated-declarators.azsl`
 
 ```
   (compilationUnit

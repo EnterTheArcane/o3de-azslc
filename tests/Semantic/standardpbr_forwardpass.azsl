@@ -101,7 +101,7 @@ struct VSOutput
 
 // VSInput, VSOutput, ObjectSrg must be defined before including this file.
 
-// [GFX TODO][ATOM-1402] Remove this and use GetObject_WorldMatrix() instead after AZSLc to HLSL code generation bug is fixed.
+// [GFX TODO][ATOM-1402] Remove this and use GetObject_WorldMatrix() instead after AZSLC to HLSL code generation bug is fixed.
 float4x4 GetObject_WorldMatrix_TEMP()
 {
     float4x4 modelToWorld = float4x4(

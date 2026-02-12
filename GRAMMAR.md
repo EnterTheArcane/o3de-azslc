@@ -7,14 +7,14 @@ For the most part everything that works in HLSL SM 6.0 and above should work in 
 ## Samples
 
 The easiest way to get started is to check the test suite, which is a collection of 100+ tests that are also meant to be samples of what is allowed and what is disallowed in the grammar.
-```
-tests\Samples             // More advanced samples
-tests\Semantic            // Gramatically and semantically correct tests - you can write such code
-tests\Semantic\AsError    // Gramatically correct, but semantically incorrect - these samples don't work because of higher level language rules
-tests\Syntax              // Gramatically correct language
-tests\Syntax\AsError      // Gibberish - you shouldn't even write this, AZSLc can't make any sense of such files 
-```
 
+```
+Tests/Samples             // More advanced samples
+Tests/Semantic            // Gramatically and semantically correct tests - you can write such code
+Tests/Semantic/AsError    // Gramatically correct, but semantically incorrect - these samples don't work because of higher level language rules
+Tests/Syntax              // Gramatically correct language
+Tests/Syntax/AsError      // Gibberish - you shouldn't even write this, AZSLC can't make any sense of such files 
+```
 
 ## Exceptions to HLSL
 
@@ -74,8 +74,7 @@ Attribute sequences with a namespace (for example `[[vk::location(1)]]`) have to
 Multiple namespaces can be specified, for example `--namespace=vk,mobile,debug`, comma separated with no whitespaces. Note that only one such namespace can be a graphics API. For example `--namespace=vk,dx` is not allowed - you compile the file either for DirectX or Vulkan, but not both at the same time!
 
 Throughout this document we use some naming conventions for namespaces - for example `[[dx::]]` for DirectX12, `[[vk::]]` for Vulkan, etc.
-However, AZSLc doesn't restrict the choice of namespace. It is left to the shader authors and the consumer application. 
-
+However, AZSLC doesn't restrict the choice of namespace. It is left to the shader authors and the consumer application. 
 
 #### Global vs Attached attributes
 
@@ -86,24 +85,24 @@ Thus `[[global::attribute]]` is a global attribute with no namespace (`global` i
 
 #### Special Attributes
 
-AZSLc uses some attributes and passes others. The special attributes are listed below.
+AZSLC uses some attributes and passes others. The special attributes are listed below.
 
 - `[[global::verbatim("// Text will be re-emitted as its!")]]`
 
-Verbatim attributes will emit all their arguments as-is, on a single line with a single whitespace between them. AZSLc makes no sense of what's in the verbatim block. You can use macros and includes here, but those macros will have to target the next compiler (dxc, spriv-cross, etc.), AZSLc will make no sense of what's being included.
+Verbatim attributes will emit all their arguments as-is, on a single line with a single whitespace between them. AZSLC makes no sense of what's in the verbatim block. You can use macros and includes here, but those macros will have to target the next compiler (dxc, spriv-cross, etc.), AZSLC will make no sense of what's being included.
 
-It is possible to include files with the `#include` directive this way, refer to `tests/Advanced/simple-surface.azsl` for an example.
+It is possible to include files with the `#include` directive this way, refer to `Tests/Advanced/simple-surface.azsl` for an example.
 
 - `[[global::output_format("R16G16B16A16_FLOAT")]]`
 
 The `output_format` specifies pixel shader entry output format hint. If no index is provided, it affects all render targets, otherwise you can specify a render target (0 to 7) before the format.
 
-Refer to `tests/Samples/PixelShaderOutputAttributes.azsl` for details.
+Refer to `Tests/Samples/PixelShaderOutputAttributes.azsl` for details.
 
 ### Enumerations
 
-AZSLc supports enumerations, both unscoped (`enum`) and scoped (`enum class` and `enum struct`).
+AZSLC supports enumerations, both unscoped (`enum`) and scoped (`enum class` and `enum struct`).
 
 The usage is the same as in C++ for the most part with the exception that explicit declaration of underlying type is not supported. Also, unlike in Microsoft C++ Compiler (cl), non-class enumerators cannot be refered to using explicit qualification.
 
-Refer to `tests/Samples/Enumeration.azsl` for details.
+Refer to `Tests/Samples/Enumeration.azsl` for details.

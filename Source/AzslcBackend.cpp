@@ -415,7 +415,7 @@ namespace AZ::ShaderCompiler
     Json::Value Backend::GetVariantList(const Options& options, bool includeEmpty) const
     {
         Json::Value varRoot(Json::objectValue);
-        varRoot["meta"] = "Variant options list exported by AZSLc";
+        varRoot["meta"] = "Variant options list exported by AZSLC";
 
         bool useSpecializationConstants = false;
 

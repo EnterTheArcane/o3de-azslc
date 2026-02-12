@@ -182,10 +182,10 @@ namespace AZ::ShaderCompiler
             const uint32_t startingOffset,
             uint32_t& nextMemberStartingOffset) const;
 
-        //! The shader developer declares each rootconstant variable independently, but AZSLc
+        //! The shader developer declares each rootconstant variable independently, but AZSLC
         //! combines all those variables into a single ConstantBuffer. This function calculates
         //! the total size of the generated ConstantBuffer.
-        //! @param exportedTypeId: This is the Uid created at runtime by AZSLc to identify the CB that contains
+        //! @param exportedTypeId: This is the Uid created at runtime by AZSLC to identify the CB that contains
         //!                        all the rootconstants.
         uint32_t CalculateSizeOfRootConstantsCB(
             const IdentifierUID& exportedTypeId,

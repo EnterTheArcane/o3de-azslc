@@ -402,7 +402,7 @@ ShaderVariantFallback : 'ShaderVariantFallback';
 ShaderResourceGroupSemantic : 'ShaderResourceGroupSemantic';
 ShaderResourceGroup : 'ShaderResourceGroup';
 
-// AZSLc-specific internal access keywords
+// AZSLC-specific internal access keywords
 KW_ext_print_message : '__azslc_print_message' ;
 KW_ext_print_symbol : '__azslc_print_symbol' ;
 KW_ext_prtsym_fully_qualified : '__azslc_prtsym_fully_qualified' ;
