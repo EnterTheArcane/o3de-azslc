@@ -1,24 +1,23 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.24)
+cmake_policy(SET CMP0135 NEW) 
 
-project (Azslc)
+project (azslc)
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+set(CMAKE_POLICY_VERSION_MINIMUM "3.5")
 
 include(FetchContent)
 
-FetchContent_Declare(
-  cli11
-  GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
-  GIT_TAG 3ce61a169297f5fe7d4b08bdbfa82290950d6f7f
+FetchContent_Declare(cli11
+  URL https://github.com/CLIUtils/CLI11/archive/3ce61a169297f5fe7d4b08bdbfa82290950d6f7f.tar.gz
+  URL_HASH SHA256=4c34eab309be04c1b78be0c3f66c16f204c7a45f5cbdcbe1cab7b69c186e8456
 )
 
 # Antlr4 external dependency
-FetchContent_Declare(
-  antlr4
-  GIT_REPOSITORY https://github.com/o3de/antlr4/
-  GIT_TAG o3de-4.13.2
+FetchContent_Declare(antlr4
+  URL https://github.com/antlr/antlr4/archive/8e6fd9147b3c9d36b60e2b6656871a55227efb1b.tar.gz
+  URL_HASH SHA256=c52fb2a90ae082ab5b5ec6b41f6c0e66f691962e4b4f772580e5da678fe51fed
   SOURCE_SUBDIR runtime/Cpp
-  CMAKE_ARGS "-DCMAKE_BUILD_TYPE=Release"
-  GIT_SHALLOW TRUE
-  GIT_PROGRESS TRUE
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
