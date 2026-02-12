@@ -21,6 +21,12 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE
 )
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(
+    -Wno-language-extension-token
+  )
+endif()
+
 FetchContent_MakeAvailable(cli11 antlr4)
 
 # get all chars that are not separators before the end
