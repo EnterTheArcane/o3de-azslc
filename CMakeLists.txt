@@ -9,10 +9,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(CMAKE_POLICY_VERSION_MINIMUM "3.5")
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/lib>)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/lib>)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
-
 if(MSVC)
     add_compile_options(
         /MP
@@ -33,6 +29,8 @@ add_subdirectory(External/antlr4)
 add_subdirectory(External/cli11)
 add_subdirectory(External/jsoncpp)
 
+add_executable(azslc)
+
 file(GLOB_RECURSE SOURCES
     Platform/*.cpp
     Platform/*.h
@@ -41,11 +39,20 @@ file(GLOB_RECURSE SOURCES
     Source/*.tpl
 )
 
-add_executable(azslc ${SOURCES})
+target_sources(azslc PRIVATE ${SOURCES})
 
 target_include_directories(azslc PRIVATE
-    Platform/Common/Source
-    Source
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
+)
+
+target_link_libraries(azslc PRIVATE
+    External::antlr4
+    External::cli11
+    External::jsoncpp
+)
+
+set_target_properties(azslc PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
 antlr4_generate(
@@ -53,12 +60,6 @@ antlr4_generate(
     LEXER_GRAMMAR Source/Grammar/azslLexer.g4
     PARSER_GRAMMAR Source/Grammar/azslParser.g4
     OUTPUT_DIR "${CMAKE_BINARY_DIR}/_generated"
-)
-
-target_link_libraries(azslc PRIVATE
-    External::antlr4
-    External::cli11
-    External::jsoncpp
 )
 
 set_property(

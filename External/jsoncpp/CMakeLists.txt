@@ -1,6 +1,13 @@
 include(FetchContent)
 
-set(JSONCPP_WITH_TESTS OFF CACHE BOOL "")
+set(JSONCPP_WITH_TESTS OFF)
+set(JSONCPP_WITH_POST_BUILD_UNITTEST OFF)
+set(JSONCPP_WITH_PKGCONFIG_SUPPORT OFF)
+set(JSONCPP_WITH_CMAKE_PACKAGE OFF)
+set(JSONCPP_WITH_EXAMPLE OFF)
+set(JSONCPP_STATIC_WINDOWS_RUNTIME ON)
+set(BUILD_SHARED_LIBS OFF)
+set(BUILD_OBJECT_LIBS OFF)
 
 FetchContent_Declare(jsoncpp
     URL https://github.com/open-source-parsers/jsoncpp/archive/refs/tags/1.9.6.tar.gz

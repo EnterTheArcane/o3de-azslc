@@ -6,7 +6,7 @@
  *
  */
 
-#include <AzslcEmitter.h>
+#include "AzslcEmitter.h"
 #include "CommonVulkanPlatformEmitter.h"
 
 namespace AZ::ShaderCompiler

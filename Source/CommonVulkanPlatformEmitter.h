@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include <AzslcPlatformEmitter.h>
+#include "AzslcPlatformEmitter.h"
 
 namespace AZ::ShaderCompiler
 {
