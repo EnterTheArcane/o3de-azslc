@@ -6,7 +6,7 @@ set(ANTLR_BUILD_STATIC ON)
 set(TRACE_ATN OFF)
 
 FetchContent_Declare(antlr4
-    URL https://github.com/antlr/antlr4/archive/8e6fd9147b3c9d36b60e2b6656871a55227efb1b.tar.gz
+    URL https://github.com/antlr/antlr4/archive/8e6fd9147b3c9d36b60e2b6656871a55227efb1b.tar.gz # 2026-01-01
     URL_HASH SHA256=c52fb2a90ae082ab5b5ec6b41f6c0e66f691962e4b4f772580e5da678fe51fed
     SOURCE_SUBDIR runtime/Cpp
     DOWNLOAD_NO_PROGRESS ON
