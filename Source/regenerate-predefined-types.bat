@@ -1,2 +1,0 @@
-@python exportKeywords.py
-@pause

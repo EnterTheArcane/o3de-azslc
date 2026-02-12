@@ -20,140 +20,98 @@ set(ANTLR4_JAR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/antlr4-4.13.2-complete.jar" CAC
 
 function(antlr4_generate)
     set(_options "")
-    set(_one_value TARGET LEXER_GRAMMAR PARSER_GRAMMAR OUTPUT_DIR LISTENER VISITOR)
+    set(_one_value TARGET LEXER_GRAMMAR PARSER_GRAMMAR OUTPUT_DIR)
     set(_multi_value "")
-    cmake_parse_arguments(ARG "${_options}" "${_one_value}" "${_multi_value}" ${ARGN})
+    cmake_parse_arguments(_arg "${_options}" "${_one_value}" "${_multi_value}" ${ARGN})
 
-    if(NOT ARG_TARGET)
-        message(FATAL_ERROR "antlr4_generate: TARGET is required")
-    endif()
-    if(NOT ARG_OUTPUT_DIR)
-        message(FATAL_ERROR "antlr4_generate: OUTPUT_DIR is required")
+    if(NOT _arg_TARGET)
+        message(FATAL_ERROR "TARGET is required")
     endif()
 
-    file(MAKE_DIRECTORY "${ARG_OUTPUT_DIR}")
-
-    set(_antlr_flags -Dlanguage=Cpp -o "${ARG_OUTPUT_DIR}")
-
-    if(ARG_LISTENER)
-        list(APPEND _antlr_flags -listener)
-    else()
-        list(APPEND _antlr_flags -no-listener)
+    if(NOT _arg_OUTPUT_DIR)
+        message(FATAL_ERROR "OUTPUT_DIR is required")
     endif()
 
-    if(ARG_VISITOR)
-        list(APPEND _antlr_flags -visitor)
-    else()
-        list(APPEND _antlr_flags -no-visitor)
-    endif()
+    file(MAKE_DIRECTORY "${_arg_OUTPUT_DIR}")
 
+    set(_antlr_flags -Dlanguage=Cpp -o "${_arg_OUTPUT_DIR}" -listener -visitor)
     set(_all_generated "")
     set(_lexer_outputs "")
 
-    if(ARG_LEXER_GRAMMAR)
-        get_filename_component(_lexer_name "${ARG_LEXER_GRAMMAR}" NAME_WE)
+    if(_arg_LEXER_GRAMMAR)
+        get_filename_component(_lexer_name "${_arg_LEXER_GRAMMAR}" NAME_WE)
 
-        # ANTLR also produces .tokens and .interp alongside the C++ sources.
-        # The .tokens file is required by the parser step (tokenVocab), so it
-        # must be listed as an OUTPUT to establish a proper dependency chain.
         set(_lexer_outputs
-            "${ARG_OUTPUT_DIR}/${_lexer_name}.cpp"
-            "${ARG_OUTPUT_DIR}/${_lexer_name}.h"
-            "${ARG_OUTPUT_DIR}/${_lexer_name}.tokens"
-            "${ARG_OUTPUT_DIR}/${_lexer_name}.interp"
+            "${_arg_OUTPUT_DIR}/${_lexer_name}.cpp"
+            "${_arg_OUTPUT_DIR}/${_lexer_name}.h"
+            "${_arg_OUTPUT_DIR}/${_lexer_name}.tokens"
+            "${_arg_OUTPUT_DIR}/${_lexer_name}.interp"
         )
 
         add_custom_command(
             OUTPUT  ${_lexer_outputs}
-            COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4_JAR_PATH}"
-                    ${_antlr_flags}
-                    "${ARG_LEXER_GRAMMAR}"
-            DEPENDS "${ARG_LEXER_GRAMMAR}"
-            WORKING_DIRECTORY "${ARG_OUTPUT_DIR}"
-            COMMENT "ANTLR4: Generating lexer from ${_lexer_name}.g4"
+            COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4_JAR_PATH}" ${_antlr_flags} "${_arg_LEXER_GRAMMAR}"
+            DEPENDS "${_arg_LEXER_GRAMMAR}"
+            WORKING_DIRECTORY "${_arg_OUTPUT_DIR}"
+            COMMENT "Generating lexer from ${_lexer_name}.g4"
             VERBATIM
+            CODEGEN
         )
 
         # Only the C++ files are compiled; .tokens/.interp are build artifacts
         list(APPEND _all_generated
-            "${ARG_OUTPUT_DIR}/${_lexer_name}.cpp"
-            "${ARG_OUTPUT_DIR}/${_lexer_name}.h"
+            "${_arg_OUTPUT_DIR}/${_lexer_name}.cpp"
+            "${_arg_OUTPUT_DIR}/${_lexer_name}.h"
         )
     endif()
 
-    if(ARG_PARSER_GRAMMAR)
-        get_filename_component(_parser_name "${ARG_PARSER_GRAMMAR}" NAME_WE)
+    if(_arg_PARSER_GRAMMAR)
+        get_filename_component(_parser_name "${_arg_PARSER_GRAMMAR}" NAME_WE)
 
         set(_parser_outputs
-            "${ARG_OUTPUT_DIR}/${_parser_name}.cpp"
-            "${ARG_OUTPUT_DIR}/${_parser_name}.h"
-            "${ARG_OUTPUT_DIR}/${_parser_name}.tokens"
-            "${ARG_OUTPUT_DIR}/${_parser_name}.interp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}.h"
+            "${_arg_OUTPUT_DIR}/${_parser_name}.tokens"
+            "${_arg_OUTPUT_DIR}/${_parser_name}.interp"
+            # Listener
+            "${_arg_OUTPUT_DIR}/${_parser_name}Listener.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}Listener.h"
+            "${_arg_OUTPUT_DIR}/${_parser_name}BaseListener.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}BaseListener.h"
+            # Visitor
+            "${_arg_OUTPUT_DIR}/${_parser_name}Visitor.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}Visitor.h"
+            "${_arg_OUTPUT_DIR}/${_parser_name}BaseVisitor.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}BaseVisitor.h"
         )
-
-        # Listener outputs
-        if(ARG_LISTENER)
-            list(APPEND _parser_outputs
-                "${ARG_OUTPUT_DIR}/${_parser_name}Listener.cpp"
-                "${ARG_OUTPUT_DIR}/${_parser_name}Listener.h"
-                "${ARG_OUTPUT_DIR}/${_parser_name}BaseListener.cpp"
-                "${ARG_OUTPUT_DIR}/${_parser_name}BaseListener.h"
-            )
-        endif()
-
-        # Visitor outputs
-        if(ARG_VISITOR)
-            list(APPEND _parser_outputs
-                "${ARG_OUTPUT_DIR}/${_parser_name}Visitor.cpp"
-                "${ARG_OUTPUT_DIR}/${_parser_name}Visitor.h"
-                "${ARG_OUTPUT_DIR}/${_parser_name}BaseVisitor.cpp"
-                "${ARG_OUTPUT_DIR}/${_parser_name}BaseVisitor.h"
-            )
-        endif()
-
-        # The parser depends on its own .g4, but critically also on the lexer
-        # outputs — ANTLR needs the lexer's .tokens file (tokenVocab) to
-        # generate the parser.  By depending on the lexer OUTPUT list, CMake
-        # guarantees the lexer step runs first.
-        set(_parser_depends "${ARG_PARSER_GRAMMAR}")
-        if(_lexer_outputs)
-            list(APPEND _parser_depends ${_lexer_outputs})
-        endif()
 
         add_custom_command(
             OUTPUT  ${_parser_outputs}
-            COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4_JAR_PATH}"
-                    ${_antlr_flags}
-                    "${ARG_PARSER_GRAMMAR}"
-            DEPENDS ${_parser_depends}
-            WORKING_DIRECTORY "${ARG_OUTPUT_DIR}"
-            COMMENT "ANTLR4: Generating parser from ${_parser_name}.g4"
+            COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4_JAR_PATH}" ${_antlr_flags} "${_arg_PARSER_GRAMMAR}"
+            DEPENDS ${_arg_PARSER_GRAMMAR} ${_lexer_outputs}
+            WORKING_DIRECTORY "${_arg_OUTPUT_DIR}"
+            COMMENT "Generating parser from ${_parser_name}.g4"
             VERBATIM
+            CODEGEN
         )
 
-        # Only the C++ files are compiled
         list(APPEND _all_generated
-            "${ARG_OUTPUT_DIR}/${_parser_name}.cpp"
-            "${ARG_OUTPUT_DIR}/${_parser_name}.h"
+            "${_arg_OUTPUT_DIR}/${_parser_name}.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}.h"
+            # Listener
+            "${_arg_OUTPUT_DIR}/${_parser_name}Listener.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}Listener.h"
+            "${_arg_OUTPUT_DIR}/${_parser_name}BaseListener.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}BaseListener.h"
+            # Visitor
+            "${_arg_OUTPUT_DIR}/${_parser_name}Visitor.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}Visitor.h"
+            "${_arg_OUTPUT_DIR}/${_parser_name}BaseVisitor.cpp"
+            "${_arg_OUTPUT_DIR}/${_parser_name}BaseVisitor.h"
         )
-        if(ARG_LISTENER)
-            list(APPEND _all_generated
-                "${ARG_OUTPUT_DIR}/${_parser_name}Listener.cpp"
-                "${ARG_OUTPUT_DIR}/${_parser_name}Listener.h"
-                "${ARG_OUTPUT_DIR}/${_parser_name}BaseListener.cpp"
-                "${ARG_OUTPUT_DIR}/${_parser_name}BaseListener.h"
-            )
-        endif()
-        if(ARG_VISITOR)
-            list(APPEND _all_generated
-                "${ARG_OUTPUT_DIR}/${_parser_name}Visitor.cpp"
-                "${ARG_OUTPUT_DIR}/${_parser_name}Visitor.h"
-                "${ARG_OUTPUT_DIR}/${_parser_name}BaseVisitor.cpp"
-                "${ARG_OUTPUT_DIR}/${_parser_name}BaseVisitor.h"
-            )
-        endif()
     endif()
 
-    # Export the list of generated C++ files to the caller
-    set(ANTLR4_GENERATED_SOURCES ${_all_generated} PARENT_SCOPE)
+    set_source_files_properties(${_all_generated} PROPERTIES GENERATED TRUE)
+    target_sources(${_arg_TARGET} PRIVATE ${_all_generated})
+    target_include_directories(${_arg_TARGET} PRIVATE "${_arg_OUTPUT_DIR}")
 endfunction()

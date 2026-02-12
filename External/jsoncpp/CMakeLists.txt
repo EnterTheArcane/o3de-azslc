@@ -1,6 +1,6 @@
 include(FetchContent)
 
-set(JSONCPP_WITH_TESTS OFF)
+set(JSONCPP_WITH_TESTS OFF CACHE BOOL "")
 
 FetchContent_Declare(jsoncpp
     URL https://github.com/open-source-parsers/jsoncpp/archive/24682e37bf1425455b45e7db69dbdbcd30aec7dd.tar.gz
