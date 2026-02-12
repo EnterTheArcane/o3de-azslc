@@ -1,5 +1,6 @@
 #!/usr/bin/env pwsh
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
 
 Write-Host "Updating package lists"
 apt-get update
