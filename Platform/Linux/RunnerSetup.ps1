@@ -40,6 +40,10 @@ Components: main restricted multiverse universe
 Architectures: arm64
 "@ | sudo tee /etc/apt/sources.list.d/ubuntu.sources > $null
 
+Write-Host "Add target architectures"
+sudo dpkg --add-architecture amd64
+sudo dpkg --add-architecture arm64
+
 Write-Host "Updating package lists"
 sudo apt-get update
 
