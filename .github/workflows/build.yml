@@ -59,8 +59,8 @@ on:
         default: false
 
 jobs:
-  main:
-    name: ${{ inputs.platform }}-${{ inputs.architecture }}
+  build:
+    name: Build
 
     runs-on: >-
       ${{
