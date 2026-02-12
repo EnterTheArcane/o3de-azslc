@@ -218,8 +218,8 @@ namespace AZ::ShaderCompiler
     //! setup all scope migrations (srg content to global, local structs to global)
     void CodeEmitter::SetupScopeMigrations(const Options& options)
     {
-        m_translations.SetAccessSymbolQueryFunctor([=](QualifiedNameView qnv){return m_ir->GetKindInfo(IdentifierUID{qnv});});
-        m_translations.SetGetSeenatFunctor([=](QualifiedNameView qnv) -> vector<Seenat>&
+        m_translations.SetAccessSymbolQueryFunctor([this](QualifiedNameView qnv){return m_ir->GetKindInfo(IdentifierUID{qnv});});
+        m_translations.SetGetSeenatFunctor([this](QualifiedNameView qnv) -> vector<Seenat>&
                                             {
                                                 auto* uidkind = m_ir->GetIdAndKindInfo(qnv);
                                                 if (uidkind)
@@ -579,7 +579,7 @@ namespace AZ::ShaderCompiler
         if (auto attrList = m_ir->m_symbols.GetAttributeList(uid))
         {
             for_each(attrList->begin(), attrList->end(),
-                     [=](auto&& attrInfo)
+                     [this, &omissionList](auto&& attrInfo)
                      {
                          if (!IsIn(attrInfo.m_attribute, omissionList))
                          {

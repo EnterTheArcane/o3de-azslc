@@ -918,8 +918,8 @@ namespace AZ::ShaderCompiler
             for (auto* identifier : ctx->qualifiedId()->nestedNameSpecifier()->Identifier())
             {
                 action(IdExpressionPart{identifier->getSymbol(), IdExpressionPart::NestedNameSpecifier});
-                auto* nextToken = identifier->getSymbol()->getTokenSource()->nextToken().get();
-                action(IdExpressionPart{nextToken, IdExpressionPart::ScopeResolutionOperator});
+                std::unique_ptr<Token> nextToken = identifier->getSymbol()->getTokenSource()->nextToken();
+                action(IdExpressionPart{nextToken.get(), IdExpressionPart::ScopeResolutionOperator});
             }
             Token* last = ctx->qualifiedId()->unqualifiedId()->Identifier()->getSymbol();
             action(IdExpressionPart{last, IdExpressionPart::QualifiedLeaf});

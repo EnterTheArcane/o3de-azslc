@@ -143,7 +143,8 @@ namespace AZ::ShaderCompiler
     BindingType RootParamTypeToBindingType(RootParamType paramType)
     {
         // the 2 enum orders are arranged the same for this to work
-        return BindingType::EnumType( paramType < BindingType::EndEnumeratorSentinel_ ? int(paramType) : BindingType::B );
+        const auto paramBindingType = static_cast<BindingType::EnumType>(paramType.m_value);
+        return paramBindingType < BindingType::EndEnumeratorSentinel_ ? paramBindingType : BindingType::B;
     }
 
     RootParamType FindParamType(const ExtendedTypeInfo& typeInfoExt)
