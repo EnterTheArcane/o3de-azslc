@@ -901,7 +901,7 @@ namespace AZ::ShaderCompiler
     template <typename Functor>
     void ForEachIdExpressionPart(AstIdExpr* ctx, Functor action)
     {
-        static_assert( is_invocable<Functor, IdExpressionPart>::value, "please pass function objects that takes IdExpressionPart as argument" );
+        static_assert(std::is_invocable<Functor, IdExpressionPart>::value, "please pass function objects that takes IdExpressionPart as argument");
         if (ctx->unqualifiedId())
         {
             Token* loneLeaf = ctx->unqualifiedId()->Identifier()->getSymbol();

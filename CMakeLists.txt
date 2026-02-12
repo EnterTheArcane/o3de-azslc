@@ -29,11 +29,6 @@ file(GLOB_RECURSE azslc_LocalSrc
     Source/*.tpl
 )
 
-file(GLOB_RECURSE azslc_ExternalSrc
-    Source/external/mpark-variant/master/*.hpp
-    Source/external/tiny/*.h
-)
-
 file(GLOB_RECURSE azslc_GeneratedSrc
     Source/generated/*.cpp
 )
@@ -45,15 +40,12 @@ set(ANTLR4CPP_INCLUDE_DIRS
     ${antlr4_SOURCE_DIR}/runtime/Cpp/runtime/src/tree
 )
 
-add_executable(azslc ${azslc_LocalSrc} ${azslc_PlatformSrc} ${azslc_GeneratedSrc} ${azslc_ExternalSrc})
+add_executable(azslc ${azslc_LocalSrc} ${azslc_PlatformSrc} ${azslc_GeneratedSrc})
 
 target_include_directories(azslc PRIVATE
     ${ANTLR4CPP_INCLUDE_DIRS}
     Platform/Common/Source
     Source
-    Source/external
-    Source/external/mpark-variant/master
-    Source/external/tiny
 )
 
 if(MSVC)

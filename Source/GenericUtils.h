@@ -28,7 +28,7 @@ namespace AZ
     //! Returns whatever the passed functor would.
     //! Throws if all passed objects are null.
     template <typename Lambda, typename T>
-    invoke_result_t<Lambda, T*> VisitFirstNonNull(Lambda functor, T* object) noexcept(false)
+    std::invoke_result_t<Lambda, T*> VisitFirstNonNull(Lambda functor, T* object) noexcept(false)
     {
         if (object)
         {
@@ -38,7 +38,7 @@ namespace AZ
     }
 
     template <typename Lambda, typename T, typename... TOther>
-    invoke_result_t<Lambda, T*> VisitFirstNonNull(Lambda functor, T*object, TOther*... rest) noexcept(false)
+    std::invoke_result_t<Lambda, T*> VisitFirstNonNull(Lambda functor, T*object, TOther*... rest) noexcept(false)
     {
         if (object)
         {

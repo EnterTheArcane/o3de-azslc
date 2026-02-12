@@ -170,7 +170,7 @@ namespace AZ::ShaderCompiler
             // define a single generic visitor functor for the variant.
             // We are lucky that all AST nodes have a start object.
             // So this code compiles and work for all 5 types of nodes.
-            return StdUtils::visit([](auto&& arg)
+            return std::visit([](auto&& arg)
                                    {
                                        return static_cast<antlr4::ParserRuleContext*>(arg);
                                    }, m_declNodeVt);
@@ -185,7 +185,7 @@ namespace AZ::ShaderCompiler
         //! get Name token from declaration contexts
         const Token* GetDeclNodeNameToken() const
         {
-            return StdUtils::visit([](auto&& arg)
+            return std::visit([](auto&& arg)
                                    {
                                        return arg->Name;
                                    }, m_declNodeVt);
@@ -985,7 +985,7 @@ namespace AZ::ShaderCompiler
         template<typename Visitor>
         auto VisitSub(Visitor&& v) const
         {
-            return StdUtils::visit(std::forward<Visitor>(v), m_subInfo);
+            return std::visit(std::forward<Visitor>(v), m_subInfo);
         }
 
     private:
