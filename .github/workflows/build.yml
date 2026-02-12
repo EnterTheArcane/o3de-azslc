@@ -60,8 +60,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            gcc-x86-64-linux-gnu g++-x86-64-linux-gnu \
-            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+            binfmt-support qemu-user-static \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+            gcc-x86-64-linux-gnu g++-x86-64-linux-gnu
+          sudo update-binfmts --enable qemu-aarch64
+          sudo update-binfmts --enable qemu-x86-64
 
       - name: Configure
         env:

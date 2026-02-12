@@ -1,3 +1,11 @@
+#
+# Copyright (c) Contributors to the Open 3D Engine Project.
+# For complete copyright and license terms please see the LICENSE at the root of this distribution.
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+#
+#
+
 cmake_minimum_required(VERSION 3.31)
 cmake_policy(SET CMP0077 NEW)
 cmake_policy(SET CMP0135 NEW)
@@ -27,9 +35,7 @@ else()
     )
 endif()
 
-add_subdirectory(External/antlr4)
-add_subdirectory(External/cli11)
-add_subdirectory(External/jsoncpp)
+add_subdirectory(External)
 
 add_executable(azslc)
 
