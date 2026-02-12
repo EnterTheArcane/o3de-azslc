@@ -13,6 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
 
 add_subdirectory(External/antlr4)
 add_subdirectory(External/cli11)
+add_subdirectory(External/jsoncpp)
 
 # get all chars that are not separators before the end
 string(REGEX MATCH "[^/\\]*$" buildPlatform ${CMAKE_BINARY_DIR})
@@ -24,13 +25,11 @@ file(GLOB_RECURSE azslc_PlatformSrc
 
 file(GLOB_RECURSE azslc_LocalSrc
     Source/*.cpp
-    Source/*.tpl
     Source/*.h
+    Source/*.tpl
 )
 
 file(GLOB_RECURSE azslc_ExternalSrc
-    Source/external/jsoncpp/dist/json/*.h
-    Source/external/jsoncpp/dist/*.cpp
     Source/external/mpark-variant/master/*.hpp
     Source/external/tiny/*.h
 )
@@ -57,11 +56,6 @@ target_include_directories(azslc PRIVATE
     Source/external/tiny
 )
 
-source_group(azslc FILES ${azslc_LocalSrc})
-source_group(external FILES ${azslc_ExternalSrc})
-source_group(generated FILES ${azslc_GeneratedSrc})
-source_group(platforms FILES ${azslc_PlatformSrc})
-
 if(MSVC)
     target_compile_options(azslc PRIVATE
         /MP
@@ -71,20 +65,20 @@ if(MSVC)
     )
     target_compile_definitions(azslc PRIVATE
         _CRT_SECURE_NO_WARNINGS
-        _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-        ANTLR4CPP_STATIC
     )
 elseif(UNIX AND NOT APPLE)
-    target_link_libraries(azslc PRIVATE stdc++fs)
+    add_compile_options(
+        -Wno-language-extension-token
+    )
 endif()
 
-target_link_libraries(azslc PRIVATE CLI11::CLI11 antlr4_static)
-
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-set_target_properties(azslc PROPERTIES
-    EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}
-    LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}
+target_link_libraries(azslc PRIVATE
+    antlr4_static
+    CLI11::CLI11
+    jsoncpp_lib_static
 )
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT azslc)
+set_property(
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTY VS_STARTUP_PROJECT azslc
+)

@@ -8,10 +8,10 @@
 #pragma once
 
 #include "AzslcListener.h"
+#include "AzslcRegisters.h"
 #include "NewLineCounterStream.h"
 
-#include "jsoncpp/dist/json/json.h"
-#include "AzslcRegisters.h"
+#include "json/json.h"
 
 namespace AZ::ShaderCompiler
 {

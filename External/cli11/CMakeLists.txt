@@ -1,8 +1,8 @@
 include(FetchContent)
 
 FetchContent_Declare(cli11
-    URL https://github.com/CLIUtils/CLI11/archive/3ce61a169297f5fe7d4b08bdbfa82290950d6f7f.tar.gz
-    URL_HASH SHA256=4c34eab309be04c1b78be0c3f66c16f204c7a45f5cbdcbe1cab7b69c186e8456
+    URL https://github.com/CLIUtils/CLI11/archive/70f8072f9dd2292fd0b9f9e5f58e279f60483ed3.tar.gz
+    URL_HASH SHA256=083011ab508b66670d371b1864c22ce39282efa2f5f2ddf78827412530cceaf9 # v2.1.2
 )
 
 FetchContent_MakeAvailable(cli11)
