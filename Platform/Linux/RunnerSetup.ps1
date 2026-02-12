@@ -6,7 +6,7 @@ sudo dpkg --add-architecture amd64
 sudo dpkg --add-architecture arm64
 
 Write-Host "Updating package lists"
-sudo apt-get update
+sudo apt-get update --error-on=any
 
 Write-Host "Installing cross-compilation dependencies"
 sudo apt-get install -y --no-install-recommends `
