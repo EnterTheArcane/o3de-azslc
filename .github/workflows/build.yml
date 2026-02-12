@@ -26,6 +26,10 @@ jobs:
           - platform: Mac
             image: macos-15
           - platform: Windows
+            architecture: ARM
+            image: windows-11-arm
+          - platform: Windows
+            architecture: X64
             image: windows-2025
 
     runs-on: ${{ matrix.image }}
