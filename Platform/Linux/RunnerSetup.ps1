@@ -51,6 +51,8 @@ Write-Host "Installing cross-compilation dependencies"
 apt-get install -y --no-install-recommends `
     gcc-aarch64-linux-gnu g++-aarch64-linux-gnu `
     gcc-x86-64-linux-gnu g++-x86-64-linux-gnu `
+    libc6-dev-amd64-cross libgcc-14-dev-amd64-cross libstdc++-14-dev-amd64-cross `
+    libc6-dev-arm64-cross libgcc-14-dev-arm64-cross libstdc++-14-dev-arm64-cross `
     libc6:amd64 libc6:arm64
 
 Write-Host "Installing emulation dependencies"
