@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cctype>
 #include <cfloat>
+#include <cstdint>
 
 #include <algorithm>
 #include <array>
