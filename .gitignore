@@ -3,9 +3,7 @@
 *.tmp
 dev/*
 bin/*
-Source/generated/*.interp
-Source/generated/*.tokens
-Source/generated/java/
+Source/generated/
 .vs
 build
 Build
