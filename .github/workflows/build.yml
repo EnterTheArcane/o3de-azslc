@@ -55,5 +55,13 @@ jobs:
           CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/Platform/${{ matrix.platform }}/Toolchain/${{ matrix.architecture }}.cmake
           CMAKE_POLICY_VERSION_MINIMUM: "3.5"
         run: |
-          cmake -B build
-          cmake --build build
+          cmake -B Build
+          cmake --build Build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: azslc
+          path: Build/azslc${{ matrix.platform == 'Windows' && '.exe' || '' }}
+          if-no-files-found: error
+          overwrite: true

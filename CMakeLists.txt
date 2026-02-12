@@ -7,26 +7,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(CMAKE_POLICY_VERSION_MINIMUM "3.5")
 
-include(FetchContent)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/lib>)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/lib>)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_BINARY_DIR}/bin>)
 
-FetchContent_Declare(cli11
-    URL https://github.com/CLIUtils/CLI11/archive/3ce61a169297f5fe7d4b08bdbfa82290950d6f7f.tar.gz
-    URL_HASH SHA256=4c34eab309be04c1b78be0c3f66c16f204c7a45f5cbdcbe1cab7b69c186e8456
-)
-
-FetchContent_Declare(antlr4
-    URL https://github.com/antlr/antlr4/archive/8e6fd9147b3c9d36b60e2b6656871a55227efb1b.tar.gz
-    URL_HASH SHA256=c52fb2a90ae082ab5b5ec6b41f6c0e66f691962e4b4f772580e5da678fe51fed
-    SOURCE_SUBDIR runtime/Cpp
-)
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    #add_compile_options(
-        # -Wno-language-extension-token
-    #)
-endif()
-
-FetchContent_MakeAvailable(cli11 antlr4)
+add_subdirectory(External/antlr4)
+add_subdirectory(External/cli11)
 
 # get all chars that are not separators before the end
 string(REGEX MATCH "[^/\\]*$" buildPlatform ${CMAKE_BINARY_DIR})
@@ -60,23 +46,15 @@ set(ANTLR4CPP_INCLUDE_DIRS
     ${antlr4_SOURCE_DIR}/runtime/Cpp/runtime/src/tree
 )
 
-set(MPARK_VARIANT_INCLUDE_DIRS
-    src/external/mpark-variant/master
-)
-
-set(TINY_OPTIONAL_INCLUDE_DIRS
-    src/external/tiny
-)
-
 add_executable(azslc ${azslc_LocalSrc} ${azslc_PlatformSrc} ${azslc_GeneratedSrc} ${azslc_ExternalSrc})
 
 target_include_directories(azslc PRIVATE
+    ${ANTLR4CPP_INCLUDE_DIRS}
+    Platform/Common/src
     src
     src/external
-    Platform/Common/src
-    ${ANTLR4CPP_INCLUDE_DIRS}
-    ${MPARK_VARIANT_INCLUDE_DIRS}
-    ${TINY_OPTIONAL_INCLUDE_DIRS}
+    src/external/mpark-variant/master
+    src/external/tiny
 )
 
 source_group(azslc FILES ${azslc_LocalSrc})
@@ -101,13 +79,6 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 target_link_libraries(azslc PRIVATE CLI11::CLI11 antlr4_static)
-
-if(MSVC)
-    add_custom_command(TARGET azslc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "src/../bin/${buildPlatform}/$(Configuration)"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/$(Configuration)/azslc.exe" "src/../bin/${buildPlatform}/$(Configuration)"
-    )
-endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
