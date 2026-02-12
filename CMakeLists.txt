@@ -23,20 +23,20 @@ file(GLOB_RECURSE azslc_PlatformSrc
 )
 
 file(GLOB_RECURSE azslc_LocalSrc
-    src/*.cpp
-    src/*.tpl
-    src/*.h
+    Source/*.cpp
+    Source/*.tpl
+    Source/*.h
 )
 
 file(GLOB_RECURSE azslc_ExternalSrc
-    src/external/jsoncpp/dist/json/*.h
-    src/external/jsoncpp/dist/*.cpp
-    src/external/mpark-variant/master/*.hpp
-    src/external/tiny/*.h
+    Source/external/jsoncpp/dist/json/*.h
+    Source/external/jsoncpp/dist/*.cpp
+    Source/external/mpark-variant/master/*.hpp
+    Source/external/tiny/*.h
 )
 
 file(GLOB_RECURSE azslc_GeneratedSrc
-    src/generated/*.cpp
+    Source/generated/*.cpp
 )
 
 set(ANTLR4CPP_INCLUDE_DIRS
@@ -50,11 +50,11 @@ add_executable(azslc ${azslc_LocalSrc} ${azslc_PlatformSrc} ${azslc_GeneratedSrc
 
 target_include_directories(azslc PRIVATE
     ${ANTLR4CPP_INCLUDE_DIRS}
-    Platform/Common/src
-    src
-    src/external
-    src/external/mpark-variant/master
-    src/external/tiny
+    Platform/Common/Source
+    Source
+    Source/external
+    Source/external/mpark-variant/master
+    Source/external/tiny
 )
 
 source_group(azslc FILES ${azslc_LocalSrc})
