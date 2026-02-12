@@ -16,6 +16,7 @@ jobs:
     name: ${{ matrix.platform }} (${{ matrix.architecture }})
 
     strategy:
+      fail-fast: false
       matrix:
         platform: [Linux, Mac, Windows]
         architecture: [ARM, X64]
