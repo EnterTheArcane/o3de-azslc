@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+Copyright (c) Contributors to the Open 3D Engine Project.
+For complete copyright and license terms please see the LICENSE at the root of this distribution.
+
+SPDX-License-Identifier: Apache-2.0 OR MIT
+"""
+
 class fg:
     BLACK   = '\033[30m'
     RED     = '\033[31m'

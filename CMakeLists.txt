@@ -4,6 +4,8 @@ cmake_policy(SET CMP0135 NEW)
 
 project(azslc)
 
+option(ENABLE_TESTS "Enable tests" ON)
+
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -66,3 +68,8 @@ set_property(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTY VS_STARTUP_PROJECT azslc
 )
+
+if(ENABLE_TESTS)
+    enable_testing()
+    add_subdirectory(Tests)
+endif()
