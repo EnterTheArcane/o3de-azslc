@@ -1,4 +1,4 @@
-set(CMAKE_SYSTEM_NAME DLinuxn)
+set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR ARM64)
 set(TARGET_TRIPLE aarch64-linux-gnu)
 
