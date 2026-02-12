@@ -19,7 +19,7 @@ Suites: noble noble-updates noble-backports noble-security
 Components: main restricted universe multiverse
 Architectures: arm64
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-"@ | Out-File -FilePath /etc/apt/sources.list.d/ubuntu-arm64.list -Encoding utf8
+"@ | Out-File -FilePath /etc/apt/sources.list.d/ubuntu-arm64.sources -Encoding utf8
 
 Write-Host "Updating package lists"
 apt-get update
