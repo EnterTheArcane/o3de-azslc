@@ -20,12 +20,12 @@ on:
       image:
         type: string
         required: false
-      upload-artifact:
+      upload-artifacts:
         type: boolean
         default: false
     outputs:
-      artifact-name:
-        value: ${{ jobs.main.outputs.artifact-name }}
+      binary-artifact:
+        value: ${{ jobs.main.outputs.binary-artifact }}
 
   workflow_dispatch:
     inputs:
@@ -44,10 +44,10 @@ on:
         options:
           - ARM
           - X64
-      upload-artifact:
-        description: Upload Artifact
+      upload-artifacts:
+        description: Upload Artifacts
         type: boolean
-        default: true
+        default: false
 
 jobs:
   main:
@@ -64,7 +64,7 @@ jobs:
       }}
 
     outputs:
-      artifact-name: ${{ inputs.platform }}-${{ inputs.architecture }}
+      binary-artifact: ${{ inputs.platform }}-${{ inputs.architecture }}
 
     steps:
       - name: Checkout
@@ -116,8 +116,8 @@ jobs:
           path: TestResults.xml
           reporter: java-junit
 
-      - name: Upload Artifact
-        if: inputs.upload-artifact
+      - name: Upload Binary Artifact
+        if: inputs.upload-artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ inputs.platform }}-${{ inputs.architecture }}
