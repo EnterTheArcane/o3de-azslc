@@ -42,13 +42,13 @@ jobs:
           cmakeVersion: "4.2.3"
           ninjaVersion: "1.13.2"
 
-      - name: Install llvm
-        uses: kylemayes/install-llvm-action@ebc0426251bc40c7cd31162802432c68818ab8f0 # v2.0.9
-        # Use xcode toolchain on macOS
-        if: matrix.platform != 'Mac'
-        with:
-          version: "21.1.8"
-          env: true
+      # - name: Install llvm
+      #   uses: kylemayes/install-llvm-action@ebc0426251bc40c7cd31162802432c68818ab8f0 # v2.0.9
+      #   # Use xcode toolchain on macOS
+      #   if: matrix.platform != 'Mac'
+      #   with:
+      #     version: "21.1.8"
+      #     env: true
 
       - name: Build
         env:
