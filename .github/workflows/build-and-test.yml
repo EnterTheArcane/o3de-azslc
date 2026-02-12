@@ -9,36 +9,62 @@
 name: Build and Test
 
 on:
-  push:
+  workflow_call:
+    inputs:
+      platform:
+        type: string
+        required: true
+      architecture:
+        type: string
+        required: true
+      image:
+        type: string
+        required: false
+      upload-artifact:
+        type: boolean
+        default: false
+    outputs:
+      artifact-name:
+        value: ${{ jobs.main.outputs.artifact-name }}
+
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform
+        type: choice
+        required: true
+        options:
+          - Linux
+          - Mac
+          - Windows
+      architecture:
+        description: Architecture
+        type: choice
+        required: true
+        options:
+          - ARM
+          - X64
+      upload-artifact:
+        description: Upload Artifact
+        type: boolean
+        default: true
 
 jobs:
   main:
-    name: ${{ matrix.platform }}-${{ matrix.architecture }}
+    name: ${{ inputs.platform }}-${{ inputs.architecture }}
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: Linux
-            architecture: ARM
-            image: ubuntu-24.04-arm
-          - platform: Linux
-            architecture: X64
-            image: ubuntu-24.04
-          - platform: Mac
-            architecture: ARM
-            image: macos-15
-          - platform: Mac
-            architecture: X64
-            image: macos-15
-          - platform: Windows
-            architecture: ARM
-            image: windows-11-arm
-          - platform: Windows
-            architecture: X64
-            image: windows-2025
+    runs-on: >-
+      ${{
+        inputs.image
+        || (inputs.platform == 'Linux' && inputs.architecture == 'ARM' && 'ubuntu-24.04-arm')
+        || (inputs.platform == 'Linux' && inputs.architecture == 'X64' && 'ubuntu-24.04')
+        || (inputs.platform == 'Mac' && 'macos-15')
+        || (inputs.platform == 'Windows' && inputs.architecture == 'ARM' && 'windows-11-arm')
+        || (inputs.platform == 'Windows' && inputs.architecture == 'X64' && 'windows-2025')
+      }}
 
-    runs-on: ${{ matrix.image }}
+    outputs:
+      artifact-name: ${{ inputs.platform }}-${{ inputs.architecture }}
 
     steps:
       - name: Checkout
@@ -69,7 +95,7 @@ jobs:
         env:
           CMAKE_BUILD_TYPE: Release
           CMAKE_GENERATOR: Ninja
-          CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/Platform/${{ matrix.platform }}/Toolchain/${{ matrix.architecture }}.cmake
+          CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/Platform/${{ inputs.platform }}/Toolchain/${{ inputs.architecture }}.cmake
         run: cmake -B Build
 
       - name: Build
@@ -86,14 +112,15 @@ jobs:
       - name: Test Report
         uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637 # v2.5.0
         with:
-          name: Tests (${{ matrix.platform }})
+          name: Tests (${{ inputs.platform }}-${{ inputs.architecture }})
           path: TestResults.xml
           reporter: java-junit
 
       - name: Upload Artifact
+        if: inputs.upload-artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: ${{ matrix.platform }}-${{ matrix.architecture }}
-          path: Build/bin/azslc${{ matrix.platform == 'Windows' && '.exe' || '' }}
+          name: ${{ inputs.platform }}-${{ inputs.architecture }}
+          path: Build/bin/azslc${{ inputs.platform == 'Windows' && '.exe' || '' }}
           if-no-files-found: error
           overwrite: true

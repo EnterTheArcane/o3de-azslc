@@ -1,0 +1,46 @@
+#
+# Copyright (c) Contributors to the Open 3D Engine Project.
+# For complete copyright and license terms please see the LICENSE at the root of this distribution.
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+#
+#
+
+name: Validate
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.platform }}-${{ matrix.architecture }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Linux
+            architecture: ARM
+            image: ubuntu-24.04-arm
+          - platform: Linux
+            architecture: X64
+            image: ubuntu-24.04
+          - platform: Mac
+            architecture: ARM
+            image: macos-15
+          - platform: Mac
+            architecture: X64
+            image: macos-15
+          - platform: Windows
+            architecture: ARM
+            image: windows-11-arm
+          - platform: Windows
+            architecture: X64
+            image: windows-2025
+
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      platform: ${{ matrix.platform }}
+      architecture: ${{ matrix.architecture }}
+      image: ${{ matrix.image }}
