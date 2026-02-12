@@ -29,6 +29,8 @@
 
 inline constexpr auto none = std::nullopt;
 
+using namespace std::literals::string_view_literals;
+
 namespace AZ
 {
     // C++17 `std::variant` for C++11/14/17

@@ -542,14 +542,16 @@ namespace AZ
 
     inline string_view GetCurrentOsName()
     {
-#if defined(_WIN64)
-        return "Win64";
-#elif defined (_Win32)
-        return "Win32";
+#if defined(_WIN64) || defined(_WIN32)
+        return "Windows"sv;
 #elif defined (__APPLE__)
-        return "MacOS";
-#elif defined (__linux__) || defined(__unix__) || defined(_POSIX_VERSION)
-        return "Unix";
+        return "Mac"sv;
+#elif defined (__linux__)
+        return "Linux"sv;
+#elif defined(__unix__) || defined(_POSIX_VERSION)
+        return "Unix"sv;
+#elif
+        return "UNKNOWN"sv;
 #endif
     }
 
@@ -744,8 +746,6 @@ namespace AZ::Tests
     inline void DoAsserts2()
     {
         DoAsserts3();
-
-        using namespace std::literals::string_view_literals;
 
         assert(Slice("0123", 1, -1) == "123");
         assert(Slice("0123", 1, 2) == "1");

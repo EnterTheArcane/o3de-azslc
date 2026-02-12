@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.31)
 cmake_policy(SET CMP0077 NEW)
 cmake_policy(SET CMP0135 NEW)
 
-project(azslc)
+project(azslc VERSION 1.9.0)
 
 option(ENABLE_TESTS "Enable tests" ON)
 
@@ -48,6 +48,18 @@ file(GLOB_RECURSE SOURCES
 )
 
 target_sources(azslc PRIVATE ${SOURCES})
+
+if(WIN32)
+    configure_file(Platform/Windows/Source/azslc.rc.in "${CMAKE_BINARY_DIR}/_generated/azslc.rc")
+    target_sources(azslc PRIVATE "${CMAKE_BINARY_DIR}/_generated/azslc.rc")
+endif()
+
+target_compile_definitions(azslc PRIVATE
+    $<$<CONFIG:Debug>:AZSLC_DEBUG>
+    AZSLC_MAJOR=${PROJECT_VERSION_MAJOR}
+    AZSLC_MINOR=${PROJECT_VERSION_MINOR}
+    AZSLC_PATCH=${PROJECT_VERSION_PATCH}
+)
 
 target_include_directories(azslc PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
