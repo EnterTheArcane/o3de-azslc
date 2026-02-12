@@ -48,6 +48,14 @@ jobs:
           distribution: zulu
           java-version: 21
 
+      - name: Setup cross-compilation
+        if: matrix.platform == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            gcc-x86-64-linux-gnu g++-x86-64-linux-gnu \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
       - name: Configure
         env:
           CMAKE_BUILD_TYPE: Release
