@@ -51,7 +51,7 @@ sudo apt-get install -y --no-install-recommends `
     libc6-dev-arm64-cross libgcc-14-dev-arm64-cross libstdc++-14-dev-arm64-cross
 
 Write-Host "Installing emulation dependencies"
-apt-get install -y --no-install-recommends `
+sudo apt-get install -y --no-install-recommends `
     binfmt-support qemu-user-static `
     libc6:amd64 libstdc++6:amd64 libgcc-s1:amd64 `
     libc6:arm64 libstdc++6:arm64 libgcc-s1:arm64
