@@ -11,15 +11,38 @@ Write-Host "Add target architectures"
 dpkg --add-architecture amd64
 dpkg --add-architecture arm64
 
-Write-Host "Add arm64 apt sources"
+Write-Host "Configure apt sources"
 @"
 Types: deb
-URIs: http://ports.ubuntu.com/ubuntu-ports/
-Suites: noble noble-updates noble-backports noble-security
-Components: main restricted universe multiverse
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble
+Components: main restricted universe
+Architectures: amd64
+
+Types: deb
+URIs: http://security.ubuntu.com/ubuntu/
+Suites: noble-security
+Components: main restricted universe
+Architectures: amd64
+
+Types: deb
+URIs: http://archive.ubuntu.com/ubuntu/
+Suites: noble-updates
+Components: main restricted universe
+Architectures: amd64
+
+Types: deb
+URIs: http://azure.ports.ubuntu.com/ubuntu-ports/
+Suites: noble
+Components: main restricted multiverse universe
 Architectures: arm64
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-"@ | Out-File -FilePath /etc/apt/sources.list.d/ubuntu-arm64.sources -Encoding utf8
+
+Types: deb
+URIs: http://azure.ports.ubuntu.com/ubuntu-ports/
+Suites: noble-updates
+Components: main restricted multiverse universe
+Architectures: arm64
+"@ | Out-File -FilePath /etc/apt/sources.list.d/ubuntu.sources -Encoding utf8
 
 Write-Host "Updating package lists"
 apt-get update
