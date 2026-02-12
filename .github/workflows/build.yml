@@ -34,7 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Setup cmake
+      - name: Setup CMake
         uses: lukka/get-cmake@f176ccd3f28bda569c43aae4894f06b2435a3375 # v4.2.3
         with:
           useCloudCache: true
@@ -42,20 +42,20 @@ jobs:
           cmakeVersion: "4.2.3"
           ninjaVersion: "1.13.2"
 
-      - name: Setup java
+      - name: Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: zulu
-          java-version: 21
+          java-version: "21"
 
-      - name: Setup python
+      - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.14"
           pip-install: -r requirements.txt
           cache: pip
 
-      - name: Setup cross-compilation
+      - name: Setup Cross Compilation
         if: matrix.platform == 'Linux'
         run: |
           sudo apt-get update
@@ -74,18 +74,16 @@ jobs:
         run: cmake --build Build
 
       - name: Test
-        if: matrix.architecture == 'X64'
-        run: ctest --test-dir Build --output-on-failure --no-tests=error --output-junit TestResults.xml
+        run: ctest --test-dir Build --output-on-failure --no-tests=error --output-junit ../TestResults.xml
 
-      - name: Test report
-        if: matrix.architecture == 'X64' && !cancelled()
+      - name: Test Report
         uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637 # v2.5.0
         with:
           name: Tests (${{ matrix.platform }})
-          path: Build/TestResults.xml
+          path: TestResults.xml
           reporter: java-junit
 
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ matrix.platform }}-${{ matrix.architecture }}
