@@ -38,7 +38,7 @@ URIs: http://azure.ports.ubuntu.com/ubuntu-ports/
 Suites: noble-updates
 Components: main restricted multiverse universe
 Architectures: arm64
-"@ | sudo tee /etc/apt/sources.list > $null
+"@ | sudo tee /etc/apt/sources.list.d/ubuntu.sources > $null
 
 Write-Host "Updating package lists"
 sudo apt-get update
