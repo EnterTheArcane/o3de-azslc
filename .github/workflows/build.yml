@@ -36,6 +36,7 @@ on:
         description: Platform
         type: choice
         required: true
+        default: Windows
         options:
           - Linux
           - Mac
@@ -44,6 +45,7 @@ on:
         description: Architecture
         type: choice
         required: true
+        default: X64
         options:
           - ARM
           - X64
