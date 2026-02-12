@@ -49,24 +49,23 @@ namespace AZ::ShaderCompiler
     //static_assert( !std::is_constructible< UnqualifiedName, QualifiedName >::value );
 }
 
-namespace std
+template<>
+struct std::hash<AZ::ShaderCompiler::QualifiedName>
 {
-    template<> struct hash<AZ::ShaderCompiler::QualifiedName>
+    size_t operator()(const AZ::ShaderCompiler::QualifiedName& qn) const noexcept
     {
-        size_t operator()(const AZ::ShaderCompiler::QualifiedName& qn) const
-        {
-            return hash_value(qn);
-        }
-    };
+        return hash_value(qn);
+    }
+};
 
-    template<> struct hash<AZ::ShaderCompiler::UnqualifiedName>
+template<>
+struct std::hash<AZ::ShaderCompiler::UnqualifiedName>
+{
+    size_t operator()(const AZ::ShaderCompiler::UnqualifiedName& qn) const noexcept
     {
-        size_t operator()(const AZ::ShaderCompiler::UnqualifiedName& qn) const
-        {
-            return hash_value(qn);
-        }
-    };
-}
+        return hash_value(qn);
+    }
+};
 
 namespace AZ::ShaderCompiler
 {
@@ -99,24 +98,23 @@ namespace AZ::ShaderCompiler
     static_assert(!std::is_convertible< UnqualifiedNameView, QualifiedNameView >::value);
 }
 
-namespace std
+template<>
+struct std::hash<AZ::ShaderCompiler::QualifiedNameView>
 {
-    template<> struct hash<AZ::ShaderCompiler::QualifiedNameView>
+    size_t operator()(const AZ::ShaderCompiler::QualifiedNameView& qn) const noexcept
     {
-        size_t operator()(const AZ::ShaderCompiler::QualifiedNameView& qn) const
-        {
-            return hash_value(qn);
-        }
-    };
+        return hash_value(qn);
+    }
+};
 
-    template<> struct hash<AZ::ShaderCompiler::UnqualifiedNameView>
+template<>
+struct std::hash<AZ::ShaderCompiler::UnqualifiedNameView>
+{
+    size_t operator()(const AZ::ShaderCompiler::UnqualifiedNameView& qn) const noexcept
     {
-        size_t operator()(const AZ::ShaderCompiler::UnqualifiedNameView& qn) const
-        {
-            return hash_value(qn);
-        }
-    };
-}
+        return hash_value(qn);
+    }
+};
 
 namespace AZ::ShaderCompiler
 {
@@ -517,16 +515,23 @@ namespace AZ::ShaderCompiler
     };
 }
 
-namespace std
-{  // to fulfill unordered requirements
-    template<> struct hash<AZ::ShaderCompiler::IdentifierUID>
+template<>
+struct std::hash<AZ::ShaderCompiler::IdentifierUID>
+{
+    size_t operator()(const AZ::ShaderCompiler::IdentifierUID& arg) const noexcept
     {
-        size_t operator()(const AZ::ShaderCompiler::IdentifierUID& arg) const
-        {
-            return hash_value(arg);
-        }
-    };
-}
+        return hash_value(arg);
+    }
+};
+
+template<>
+struct std::equal_to<AZ::ShaderCompiler::IdentifierUID>
+{
+    bool operator()(const AZ::ShaderCompiler::IdentifierUID& lhs, const AZ::ShaderCompiler::IdentifierUID& rhs) const
+    {
+        return lhs == rhs;
+    }
+};
 
 namespace AZ::ShaderCompiler
 {
