@@ -12,3 +12,5 @@ FetchContent_Declare(antlr4
 )
 
 FetchContent_MakeAvailable(antlr4)
+
+add_library(External::antlr4 ALIAS antlr4_static)

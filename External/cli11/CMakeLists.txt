@@ -6,3 +6,5 @@ FetchContent_Declare(cli11
 )
 
 FetchContent_MakeAvailable(cli11)
+
+add_library(External::cli11 ALIAS CLI11)

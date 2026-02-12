@@ -6,3 +6,5 @@ FetchContent_Declare(jsoncpp
 )
 
 FetchContent_MakeAvailable(jsoncpp)
+
+add_library(External::jsoncpp ALIAS jsoncpp_lib_static)

@@ -50,15 +50,15 @@ jobs:
       #     version: "21.1.8"
       #     env: true
 
-      - name: Build
+      - name: Configure
         env:
           CMAKE_BUILD_TYPE: Release
           CMAKE_GENERATOR: Ninja
           CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/Platform/${{ matrix.platform }}/Toolchain/${{ matrix.architecture }}.cmake
-          CMAKE_POLICY_VERSION_MINIMUM: "3.5"
-        run: |
-          cmake -B Build
-          cmake --build Build
+        run: cmake -B Build
+
+      - name: Build
+        run: cmake --build Build
 
       - name: Upload artifact
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
