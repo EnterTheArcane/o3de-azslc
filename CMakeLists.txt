@@ -50,8 +50,8 @@ target_include_directories(azslc PRIVATE
 
 antlr4_generate(
     TARGET azslc
-    LEXER_GRAMMAR "${CMAKE_CURRENT_SOURCE_DIR}/Source/Grammar/azslLexer.g4"
-    PARSER_GRAMMAR "${CMAKE_CURRENT_SOURCE_DIR}/Source/Grammar/azslParser.g4"
+    LEXER_GRAMMAR Source/Grammar/azslLexer.g4
+    PARSER_GRAMMAR Source/Grammar/azslParser.g4
     OUTPUT_DIR "${CMAKE_BINARY_DIR}/_generated"
 )
 

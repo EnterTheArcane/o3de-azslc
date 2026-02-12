@@ -32,6 +32,13 @@ function(antlr4_generate)
         message(FATAL_ERROR "OUTPUT_DIR is required")
     endif()
 
+    if(_arg_LEXER_GRAMMAR AND NOT IS_ABSOLUTE "${_arg_LEXER_GRAMMAR}")
+        cmake_path(ABSOLUTE_PATH _arg_LEXER_GRAMMAR BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
+    if(_arg_PARSER_GRAMMAR AND NOT IS_ABSOLUTE "${_arg_PARSER_GRAMMAR}")
+        cmake_path(ABSOLUTE_PATH _arg_PARSER_GRAMMAR BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
+
     file(MAKE_DIRECTORY "${_arg_OUTPUT_DIR}")
 
     set(_antlr_flags -Dlanguage=Cpp -o "${_arg_OUTPUT_DIR}" -listener -visitor)
@@ -49,7 +56,7 @@ function(antlr4_generate)
         )
 
         add_custom_command(
-            OUTPUT  ${_lexer_outputs}
+            OUTPUT ${_lexer_outputs}
             COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4_JAR_PATH}" ${_antlr_flags} "${_arg_LEXER_GRAMMAR}"
             DEPENDS "${_arg_LEXER_GRAMMAR}"
             WORKING_DIRECTORY "${_arg_OUTPUT_DIR}"
@@ -86,7 +93,7 @@ function(antlr4_generate)
         )
 
         add_custom_command(
-            OUTPUT  ${_parser_outputs}
+            OUTPUT ${_parser_outputs}
             COMMAND "${Java_JAVA_EXECUTABLE}" -jar "${ANTLR4_JAR_PATH}" ${_antlr_flags} "${_arg_PARSER_GRAMMAR}"
             DEPENDS ${_arg_PARSER_GRAMMAR} ${_lexer_outputs}
             WORKING_DIRECTORY "${_arg_OUTPUT_DIR}"
