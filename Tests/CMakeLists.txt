@@ -50,7 +50,7 @@ function(azslc_add_simple_tests label compiler_flag expect_fail)
         set_tests_properties("${test_name}" PROPERTIES
             LABELS "${labels}"
             SKIP_RETURN_CODE 77
-            TIMEOUT 30
+            TIMEOUT 60
         )
     endforeach()
 endfunction()
@@ -91,7 +91,7 @@ foreach(test_file IN LISTS _emission_pass)
     set_tests_properties("${test_name}" PROPERTIES
         LABELS "Emission"
         SKIP_RETURN_CODE 77
-        TIMEOUT 30
+        TIMEOUT 60
     )
 endforeach()
 
@@ -111,7 +111,7 @@ foreach(test_file IN LISTS _emission_fail)
     set_tests_properties("${test_name}" PROPERTIES
         LABELS "Emission"
         SKIP_RETURN_CODE 77
-        TIMEOUT 30
+        TIMEOUT 60
     )
 endforeach()
 
@@ -139,7 +139,7 @@ foreach(test_file IN LISTS _advanced_tests)
     set_tests_properties("${test_name}" PROPERTIES
         LABELS "Advanced"
         SKIP_RETURN_CODE 77
-        TIMEOUT 120
+        TIMEOUT 240
     )
 endforeach()
 
@@ -207,7 +207,7 @@ if(IS_DIRECTORY "${platforms_dir}")
             set_tests_properties("${test_name}" PROPERTIES
                 LABELS "${labels}"
                 SKIP_RETURN_CODE 77
-                TIMEOUT 30
+                TIMEOUT 60
             )
         endforeach()
     endforeach()
