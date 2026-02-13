@@ -39,7 +39,7 @@ jobs:
     with:
       platform: ${{ matrix.platform }}
       architecture: ${{ matrix.architecture }}
-      output-name: azslc-${{ matrix.platform | lower }}-${{ matrix.architecture | lower }}
+      output-name: AZSLC-${{ matrix.platform }}-${{ matrix.architecture }}
       test: true
 
   release:
