@@ -12,9 +12,7 @@ cmake_policy(SET CMP0135 NEW)
 
 project(azslc VERSION 1.9.0)
 
-option(AZSLC_OUTPUT_NAME "Binary output name")
 option(AZSLC_VERSION_ONLY "Exit after project() for version extraction" OFF)
-
 option(ENABLE_TESTS "Enable tests" ON)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
@@ -80,6 +78,10 @@ target_link_libraries(azslc PRIVATE
 set_target_properties(azslc PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+if(NOT DEFINED AZSLC_OUTPUT_NAME AND DEFINED ENV{AZSLC_OUTPUT_NAME})
+    set(AZSLC_OUTPUT_NAME "$ENV{AZSLC_OUTPUT_NAME}")
+endif()
 
 if(AZSLC_OUTPUT_NAME)
     set_target_properties(azslc PROPERTIES OUTPUT_NAME "${AZSLC_OUTPUT_NAME}")

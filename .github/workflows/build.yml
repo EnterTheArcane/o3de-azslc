@@ -92,10 +92,11 @@ jobs:
 
       - name: Configure
         env:
+          AZSLC_OUTPUT_NAME: ${{ inputs.output-name }}
           CMAKE_BUILD_TYPE: Release
           CMAKE_GENERATOR: Ninja
           CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/Platform/${{ inputs.platform }}/Toolchain/${{ inputs.architecture }}.cmake
-        run: cmake -B Build -DAZSLC_OUTPUT_NAME="${{ inputs.output-name }}"
+        run: cmake -B Build
 
       - name: Build
         run: cmake --build Build
