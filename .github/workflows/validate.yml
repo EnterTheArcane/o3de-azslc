@@ -9,7 +9,10 @@
 name: Validate
 
 on:
+  pull_request:
   push:
+    branches:
+      - "**"
 
 jobs:
   build:
