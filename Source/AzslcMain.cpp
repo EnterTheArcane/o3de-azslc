@@ -17,7 +17,6 @@
 
 #include <cstddef>
 #include <filesystem>
-namespace StdFs = std::filesystem;
 
 namespace AZ::ShaderCompiler
 {
@@ -541,8 +540,8 @@ int main(int argc, const char* argv[])
         {
             if (!useStdin)
             {
-                StdFs::path inSource{ inputFile };
-                ir.m_metaData.m_insource = StdFs::absolute(inSource).lexically_normal().generic_string();
+                std::filesystem::path inSource{ inputFile };
+                ir.m_metaData.m_insource = std::filesystem::absolute(inSource).lexically_normal().generic_string();
             }
 
             // Enable attribute namespaces

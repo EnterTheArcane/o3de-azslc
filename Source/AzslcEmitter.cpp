@@ -8,10 +8,9 @@
 
 #include "AzslcEmitter.h"
 
-#include <tuple>
 #include <cmath>
 #include <filesystem>
-namespace StdFs = std::filesystem;
+#include <tuple>
 
 // We should only include the base platform emitter
 // Every specific implementation is supplied via a factory get method
@@ -473,7 +472,7 @@ namespace AZ::ShaderCompiler
                 return; // no need to emit. we can skip
         }
         // get the original file as absolute path:
-        const string& originalFileName = StdFs::absolute( m_lineFinder->GetVirtualFileName(azslLineNumber) ).lexically_normal().generic_string();
+        const string& originalFileName = std::filesystem::absolute( m_lineFinder->GetVirtualFileName(azslLineNumber) ).lexically_normal().generic_string();
         // emit the line:
         m_out << "#line " << supposedVirtualLine << " \"" << originalFileName << "\"\n";
         // remember it:

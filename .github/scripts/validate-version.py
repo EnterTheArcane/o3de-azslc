@@ -21,17 +21,13 @@ import tempfile
 from pathlib import Path
 
 
-def get_repo_root() -> Path:
-    return Path(__file__).resolve().parent.parent.parent
-
-
-def extract_cmake_version(repo_root: Path) -> str:
-    with tempfile.TemporaryDirectory(prefix="azslc-version-") as tmpdir:
+def extract_cmake_version() -> str:
+    with tempfile.TemporaryDirectory() as build_dir:
         result = subprocess.run(
             [
                 "cmake",
-                "-S", str(repo_root),
-                "-B", tmpdir,
+                "-B",
+                build_dir,
                 "-DAZSLC_VERSION_ONLY=ON",
             ],
             capture_output=True,
@@ -41,12 +37,10 @@ def extract_cmake_version(repo_root: Path) -> str:
             print(f"::error::CMake configure failed:\n{result.stderr}", file=sys.stderr)
             raise SystemExit(1)
 
-        cache_path = Path(tmpdir) / "CMakeCache.txt"
+        cache_path = Path(build_dir) / "CMakeCache.txt"
         cache_content = cache_path.read_text()
 
-        match = re.search(
-            r"^CMAKE_PROJECT_VERSION:STATIC=(.+)$", cache_content, re.MULTILINE
-        )
+        match = re.search(r"^CMAKE_PROJECT_VERSION:STATIC=(.+)$", cache_content, re.MULTILINE)
         if not match:
             print(
                 "::error::CMAKE_PROJECT_VERSION not found in CMake cache.",
@@ -72,39 +66,26 @@ def get_tag_name() -> str:
     return tag
 
 
-def set_github_output(key: str, value: str) -> None:
-    output_file = os.environ.get("GITHUB_OUTPUT")
-    if output_file:
-        with open(output_file, "a") as f:
-            f.write(f"{key}={value}\n")
-
-
-def main() -> int:
-    repo_root = get_repo_root()
-    cmake_version = extract_cmake_version(repo_root)
+def main():
+    cmake_version = extract_cmake_version()
     tag_name = get_tag_name()
 
     # Strip leading 'v' from tag (e.g., "v1.9.0" -> "1.9.0")
     tag_version = tag_name.removeprefix("v")
 
-    set_github_output("version", cmake_version)
-
     if tag_version != cmake_version:
         print(
-            f"::error::Tag version ({tag_version}) does not match "
-            f"CMakeLists.txt version ({cmake_version}).",
+            f"::error::Tag version ({tag_version}) does not match CMakeLists.txt version ({cmake_version}).",
             file=sys.stderr,
         )
         print(
-            f"::error::Update the version in CMakeLists.txt to match the tag, "
-            f"or push the correct tag.",
+            f"::error::Update the version in CMakeLists.txt to match the tag, or push the correct tag.",
             file=sys.stderr,
         )
-        return 1
+        raise SystemExit(1)
 
     print(f"Tag version ({tag_version}) matches CMake version ({cmake_version}).")
-    return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()
