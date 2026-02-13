@@ -109,7 +109,7 @@ jobs:
           --no-tests error
           --output-junit ../TestResults.xml
           --output-on-failure
-          --parallel 0
+          --parallel 8
 
       - name: Test Report
         if: inputs.test
