@@ -40,8 +40,6 @@ else()
     )
 endif()
 
-add_subdirectory(External)
-
 add_executable(azslc)
 
 file(GLOB_RECURSE SOURCES
@@ -70,6 +68,7 @@ target_include_directories(azslc PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Source>
 )
 
+add_subdirectory(External)
 target_link_libraries(azslc PRIVATE
     External::antlr4
     External::cli11
