@@ -102,9 +102,10 @@ jobs:
         run: >-
           ctest
           --test-dir Build
-          --output-on-failure
-          --no-tests=error
+          --no-tests error
           --output-junit ../TestResults.xml
+          --output-on-failure
+          --parallel 8
 
       - name: Test Report
         if: inputs.test
