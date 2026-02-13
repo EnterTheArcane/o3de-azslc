@@ -23,12 +23,6 @@ on:
       test:
         type: boolean
         default: true
-      upload-artifacts:
-        type: boolean
-        default: false
-    outputs:
-      binary-artifact:
-        value: ${{ jobs.main.outputs.binary-artifact }}
 
   workflow_dispatch:
     inputs:
@@ -53,10 +47,6 @@ on:
         description: Test
         type: boolean
         default: true
-      upload-artifacts:
-        description: Upload Artifacts
-        type: boolean
-        default: false
 
 jobs:
   build:
@@ -71,9 +61,6 @@ jobs:
         || (inputs.platform == 'Windows' && inputs.architecture == 'ARM' && 'windows-11-arm')
         || (inputs.platform == 'Windows' && inputs.architecture == 'X64' && 'windows-2025')
       }}
-
-    outputs:
-      binary-artifact: ${{ inputs.platform }}-${{ inputs.architecture }}
 
     steps:
       - name: Checkout
@@ -127,10 +114,9 @@ jobs:
           path: TestResults.xml
           reporter: java-junit
 
-      - name: Upload Binary Artifact
-        if: inputs.upload-artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ inputs.platform }}-${{ inputs.architecture }}
-          path: Build/bin/azslc${{ inputs.platform == 'Windows' && '.exe' || '' }}
+          path: Build/bin/*
           if-no-files-found: error

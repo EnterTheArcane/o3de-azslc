@@ -12,12 +12,17 @@ cmake_policy(SET CMP0135 NEW)
 
 project(azslc VERSION 1.9.0)
 
+option(AZSLC_VERSION_ONLY "Exit after project() for version extraction" OFF)
 option(ENABLE_TESTS "Enable tests" ON)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(CMAKE_POLICY_VERSION_MINIMUM "3.5")
+
+if(AZSLC_VERSION_ONLY)
+    return()
+endif()
 
 if(MSVC)
     add_compile_options(
