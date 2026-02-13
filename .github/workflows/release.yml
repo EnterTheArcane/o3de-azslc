@@ -45,7 +45,6 @@ jobs:
       platform: ${{ matrix.platform }}
       architecture: ${{ matrix.architecture }}
       test: true
-      upload-artifacts: true
 
   release:
     name: Release
