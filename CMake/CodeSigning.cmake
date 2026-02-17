@@ -104,7 +104,7 @@ if(WIN32)
     message(STATUS "Windows code signing enabled (thumbprint: ${AZSLC_SIGNTOOL_THUMBPRINT})")
 endif()
 
-add_custom_target(sign)
+add_custom_target(sign ALL)
 
 function(azslc_sign_target target)
     if(NOT TARGET "${target}")
