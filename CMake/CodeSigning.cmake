@@ -8,7 +8,7 @@
 
 include_guard(GLOBAL)
 
-option(AZSLC_CODE_SIGNING "Enable code signing" OFF)
+azslc_option(AZSLC_CODE_SIGNING OFF BOOL "Enable code signing")
 
 if(NOT AZSLC_CODE_SIGNING)
     return()
@@ -17,19 +17,19 @@ endif()
 if(APPLE)
     # For release, pass a real identity, e.g. "Developer ID Application: <Team Name> (<Team ID>)"
     # Use "-" for ad-hoc (self-signed) during development.
-    set(AZSLC_CODESIGN_IDENTITY "-" CACHE STRING
+    azslc_option(AZSLC_CODESIGN_IDENTITY "-" STRING
         "macOS code signing identity")
 
     # Hardened runtime is required for notarization.
-    set(AZSLC_CODESIGN_HARDENED_RUNTIME OFF CACHE BOOL
+    azslc_option(AZSLC_CODESIGN_HARDENED_RUNTIME OFF BOOL
         "Enable hardened runtime")
 
     # Optionally specify an entitlements file for additional permissions (e.g. hardened runtime exceptions).
-    set(AZSLC_CODESIGN_ENTITLEMENTS "" CACHE PATH
+    azslc_option(AZSLC_CODESIGN_ENTITLEMENTS "" PATH
         "Path to an entitlements plist file")
 
     # Explicit path to the codesign executable
-    set(AZSLC_CODESIGN_PATH "" CACHE PATH
+    azslc_option(AZSLC_CODESIGN_PATH "" PATH
         "Path to codesign")
 
     if(AZSLC_CODESIGN_PATH)
@@ -64,15 +64,15 @@ endif()
 if(WIN32)
     # At minimum, provide a certificate thumbprint.
     # The certificate is typically installed in the Windows certificate store beforehand.
-    set(AZSLC_SIGNTOOL_THUMBPRINT "" CACHE STRING
+    azslc_option(AZSLC_SIGNTOOL_THUMBPRINT "" STRING
         "SHA-1 certificate thumbprint for Windows code signing")
 
     # Use an RFC 3161 timestamp server to ensure signatures remain valid after the certificate expires.
-    set(AZSLC_SIGNTOOL_TIMESTAMP_URL "https://timestamp.digicert.com" CACHE STRING
+    azslc_option(AZSLC_SIGNTOOL_TIMESTAMP_URL "https://timestamp.digicert.com" STRING
         "RFC 3161 timestamp server url for Windows code signing")
 
     # Explicit path to the signtool utility
-    set(AZSLC_SIGNTOOL_PATH "" CACHE PATH
+    azslc_option(AZSLC_SIGNTOOL_PATH "" PATH
         "Path to signtool")
 
     if(NOT AZSLC_SIGNTOOL_THUMBPRINT)

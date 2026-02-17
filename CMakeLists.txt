@@ -25,6 +25,7 @@ if(AZSLC_VERSION_ONLY)
     return()
 endif()
 
+include(CMake/Utility.cmake)
 include(CMake/CodeSigning.cmake)
 
 if(MSVC)
@@ -82,9 +83,7 @@ set_target_properties(azslc PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-if(NOT DEFINED AZSLC_OUTPUT_NAME AND DEFINED ENV{AZSLC_OUTPUT_NAME})
-    set(AZSLC_OUTPUT_NAME "$ENV{AZSLC_OUTPUT_NAME}")
-endif()
+azslc_option(AZSLC_OUTPUT_NAME "" STRING "Override the output executable name")
 
 if(AZSLC_OUTPUT_NAME)
     set_target_properties(azslc PROPERTIES OUTPUT_NAME "${AZSLC_OUTPUT_NAME}")

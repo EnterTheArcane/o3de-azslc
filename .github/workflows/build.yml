@@ -26,6 +26,22 @@ on:
       test:
         type: boolean
         default: true
+      sign:
+        type: boolean
+        default: false
+    secrets:
+      APPLE_CERTIFICATE:
+        required: false
+      APPLE_CERTIFICATE_PASSWORD:
+        required: false
+      APPLE_SIGNING_IDENTITY:
+        required: false
+      WINDOWS_CERTIFICATE:
+        required: false
+      WINDOWS_CERTIFICATE_PASSWORD:
+        required: false
+      WINDOWS_CERTIFICATE_THUMBPRINT:
+        required: false
 
   workflow_dispatch:
     inputs:
@@ -50,6 +66,10 @@ on:
         description: Test
         type: boolean
         default: true
+      sign:
+        description: Sign
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -90,9 +110,22 @@ jobs:
           pip-install: -r requirements.txt
           cache: pip
 
+      - name: Setup Code Signing
+        if: inputs.sign
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: python .github/scripts/setup-code-signing.py
+
       - name: Configure
         env:
           AZSLC_OUTPUT_NAME: ${{ inputs.output-name }}
+          AZSLC_CODE_SIGNING: ${{ inputs.sign }}
+          AZSLC_CODESIGN_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          AZSLC_CODESIGN_HARDENED_RUNTIME: true
+          AZSLC_SIGNTOOL_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           CMAKE_BUILD_TYPE: Release
           CMAKE_GENERATOR: Ninja
           CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/Platform/${{ inputs.platform }}/Toolchain/${{ inputs.architecture }}.cmake
