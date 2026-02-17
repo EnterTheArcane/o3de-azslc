@@ -7,6 +7,7 @@
 #
 
 cmake_minimum_required(VERSION 3.31)
+
 cmake_policy(SET CMP0077 NEW)
 cmake_policy(SET CMP0135 NEW)
 
@@ -23,6 +24,8 @@ set(CMAKE_POLICY_VERSION_MINIMUM "3.5")
 if(AZSLC_VERSION_ONLY)
     return()
 endif()
+
+include(CMake/CodeSigning.cmake)
 
 if(MSVC)
     add_compile_options(
@@ -98,6 +101,8 @@ set_property(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTY VS_STARTUP_PROJECT azslc
 )
+
+azslc_sign_target(azslc)
 
 if(ENABLE_TESTS)
     enable_testing()
