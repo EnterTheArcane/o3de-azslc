@@ -29,6 +29,9 @@ on:
       sign:
         type: boolean
         default: false
+      upload:
+        type: boolean
+        default: false
     secrets:
       APPLE_CERTIFICATE:
         required: false
@@ -68,6 +71,10 @@ on:
         default: true
       sign:
         description: Sign
+        type: boolean
+        default: false
+      upload:
+        description: Upload Artifacts
         type: boolean
         default: false
 
@@ -153,6 +160,7 @@ jobs:
           reporter: java-junit
 
       - name: Upload Artifacts
+        if: inputs.upload
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ inputs.platform }}-${{ inputs.architecture }}

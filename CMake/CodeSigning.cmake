@@ -11,6 +11,10 @@ include_guard(GLOBAL)
 azslc_option(AZSLC_CODE_SIGNING OFF BOOL "Enable code signing")
 
 if(NOT AZSLC_CODE_SIGNING)
+    function(azslc_sign_target target)
+        # No-op when code signing is disabled.
+    endfunction()
+
     return()
 endif()
 
