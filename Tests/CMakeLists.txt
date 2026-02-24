@@ -9,8 +9,6 @@
 set(BUILDNAME "azslc")
 set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 
-include(CTest)
-
 if(NOT BUILD_TESTING)
     return()
 endif()

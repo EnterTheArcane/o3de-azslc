@@ -23,8 +23,8 @@ if(AZSLC_VERSION_ONLY)
     return()
 endif()
 
+include(CTest)
 include(CMake/Utility.cmake)
-
 include(CMake/ANTLR.cmake)
 include(CMake/CodeSigning.cmake)
 
