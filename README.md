@@ -1,86 +1,171 @@
 # Amazon Shading Language Compiler
 
-AZSLC is a stand-alone command line compiler for the Amazon Shading Language.
-It converts Amazon Shading Language (AZSL) shaders to High Level Shading Language Shader Model 6+ (HLSL) shaders.
+AZSLC is a stand-alone command-line compiler for the Amazon Shading Language (AZSL).
+It transpiles AZSL shaders into High Level Shading Language Shader Model 6+ (HLSL) shaders.
 
-For more information, see (https://o3de.org/docs/atom-guide/dev-guide/shaders/)
+For more information, see <https://o3de.org/docs/atom-guide/dev-guide/shaders>
 
-# Features and Goals
+## Features and Goals
 
-AZSLC is a compiler for the Amazon Shading Language, which is a thin extension of HLSL. 
-It unifies resource bindings across all supported graphics hardware using binding strategy which models modern API such as DirectX 12 and Vulkan. 
-Future plans include support for interfaces, generics and associated types and aims to bring the shader languages 
-closer to modern programming languages while still allowing users to write shaders in plain HLSL code.
+AZSL is a thin extension of HLSL that unifies resource bindings across all supported graphics APIs using a binding strategy modeled after modern APIs such as DirectX 12 and Vulkan. AZSLC aims to bring shader languages closer to modern programming languages -- with support for interfaces, generics, associated types, and more -- while still allowing users to write shaders in plain HLSL.
 
-Currently supported graphics APIs are:
- - DirectX 12 (Windows)
- - Vulkan (Windows, Linux, Android)
- - Metal 2 (macOS, iOS)
+Currently supported graphics APIs:
 
-# Build Instructions
-
-## Supported build architectures:
- - Windows 10 (win_x64)
- - MacOSX 10.14.0 or newer
- - linux (tested with debian)
+- DirectX 12 (Windows)
+- Metal 2 (macOS, iOS)
+- Vulkan (Windows, Linux, Android)
 
 ## Prerequisites
 
-### All platforms
-Make sure Python 3.7+ is in your `$PATH` (as 'python'), and run:
+### Required
+
+| Tool | Version |
+|---|---|
+| **CMake** | 3.31+ |
+| **C++20 compiler** | See [platform notes](#platform-notes) |
+| **Java JRE/JDK** | 1.6+ |
+| **Python** | 3.7+ |
+
+Java is required because CMake automatically invokes the bundled ANTLR 4 JAR to generate the lexer and parser C++ sources from the `.g4` grammar files during the build. No separate grammar-regeneration step is needed.
+
+Python is required for running the test suite. Install Python dependencies with:
+
 ```
-python scripts/test.and.py
-or
-python scripts/test.and.py --dev D:\o3de
+pip install -r requirements.txt
 ```
-(`D:\o3de` should be replaced with your local path for the O3DE root directory)
 
-The script will tell you the prerequisites per platform, which are also detailed below.
-If all prerequisites are installed, the script will make, build and test the shader compiler.
+### Platform Notes
 
+| Platform | Minimum Compiler |
+|---|---|
+| **Linux** | GCC 10 or Clang 15 |
+| **macOS** | Apple Clang 15 |
+| **Windows** | MSVC (Visual Studio 2019) |
 
-### Windows
- - Python 3.7
- - MSBuild 15.9 or higher (from https://github.com/Microsoft/msbuild, MS Build Tools 2019 or VS2019)
- - CMake 3.25+
- - [PyYAML](https://pyyaml.org/) (`pip install pyyaml`) - only required to run the tests
- - (optional) Visual Studio 2019 for IDE
- - (optional) Java JDK 1.6 or higher (only required to regenerate the Antlr grammar)
+Note: Linux required uuid-dev (e.g. `sudo apt-get install uuid-dev`)
 
-### Mac
- - Python 3.7
- - CMake 3.25+
- - Apple LLVM 9.0.0 (clang-900.0.39.2) or newer (tested on 9.0.0 and 10.0.0)
-   - comes with Xcode 9.2 or Command Line Tools for Xcode 9.2 or newer
- - [PyYAML](https://pyyaml.org/) (`pip install pyyaml`) - only required to run the tests
- - (optional) Java JDK 1.6 or higher (only required to regenerate the Antlr grammar)
+ARM and x64 toolchain files are provided under `Platform/<os>/Toolchain/` for cross-compilation scenarios.
 
-### Linux
- - Python 3.7
- - gcc 8
- - CMake 3.25+
- - sudo apt-get install uuid-dev (or equivalent in your distribution)
- - [PyYAML](https://pyyaml.org/) (`pip install pyyaml`) - only required to run the tests
- - (optional) Java JDK 1.6 or higher (only required to regenerate the Antlr grammar)
+## Building
 
-## (optional) Regenerate the AZSL ANTLR grammar
-1. Install Java JDK (version 1.6 or higher)
-2. (Windows) The generated source files can be recreated by running `regenerate_azsl_antlr.bat` script under `src` folder, it will regenerate the files under `src/generated`.
- - Should work on MacOSX as well, but hasn't been tested. Follow the steps in the batch file to invoke Java and rebuild the generated sources
+AZSLC uses a standard CMake workflow. All external dependencies are fetched automatically via `FetchContent` -- no manual dependency installation is needed beyond the prerequisites listed above.
 
-## (optional) azslLexer.g4 keyword changes
-You'll probably need to regenerate the `AzslcPredefinedTypes.h` header file if you made a change to the lexer keywords. For that purpose, execute regenerate-predefined-types.bat (or simply directly `python exportKeywords.py` if not on windows)
+### Quick Start
 
-# Testing
+```bash
+# Configure
+cmake -B Build
 
-The `Tests` folder includes all the unit and integration tests for AZSLC.
+# Build
+cmake --build Build --config Release
+```
 
-Tests require Python 3.7 to run. And pyyaml for a complete run. (do pip install pyyaml)
+The compiled binary is output to `Build/bin/`.
 
-For Windows, run either `launch_tests.bat` or `launch_tests_debug.bat` to launch the test suite.
+### Common CMake Options
 
-For MacOSX, run either `launch_tests.sh` or `launch_tests_debug.sh` to launch the test suite.
+| Option | Default | Description |
+|---|---|---|
+| `BUILD_TESTING` | `ON` | Enable building and registering CTest tests |
+
+### IDE Support
+
+On Windows, CMake generates a Visual Studio solution. The `azslc` project is set as the startup project automatically. You can also open the folder directly in Visual Studio or VS Code with CMake extensions.
+
+```bash
+# Generate and open in Visual Studio
+cmake -B Build -S . -G "Visual Studio 17 2022"
+start Build/azslc.sln
+```
+
+## Testing
+
+AZSLC uses **CTest** to run its test suite. Tests are automatically registered when `BUILD_TESTING` is `ON` (the default).
+
+### Running Tests
+
+```bash
+# Run all tests
+ctest --test-dir Build
+
+# Run tests in parallel
+ctest --test-dir Build -j8
+
+# Run only a specific category
+ctest --test-dir Build -L Advanced
+ctest --test-dir Build -L Emission
+ctest --test-dir Build -L Samples
+ctest --test-dir Build -L Semantic
+ctest --test-dir Build -L Syntax
+
+# Run a specific test by name
+ctest --test-dir Build -R "Syntax/empty"
+
+# Verbose output (shows PASS/FAIL details)
+ctest --test-dir Build --output-on-failure
+```
+
+### Test Categories
+
+| Category | Description |
+|---|---|---|
+| **Advanced** | Complex Python-driven test scripts (DXC integration, etc.) |
+| **Emission** | Compiles and verifies emitted output against expected patterns |
+| **Samples** | Full compilation of sample shaders |
+| **Semantic** | Validates semantic analysis |
+| **Syntax** | Validates AZSL grammar parsing |
+
+Each category includes tests that are expected to pass **and** tests that are expected to fail (located in `AsError`/`AsErrors` subdirectories). Error tests verify that the compiler correctly rejects invalid input.
+
+See [Tests/README.md](Tests/README.md) for detailed information on the test conventions and how to add new tests.
+
+## How the Grammar is Generated
+
+The AZSL grammar is defined by two ANTLR 4 files:
+
+- `Source/Grammar/azslLexer.g4` - Lexer rules (tokens, keywords, types)
+- `Source/Grammar/azslParser.g4` - Parser rules (compilation units, declarations, expressions)
+
+During the CMake build, the bundled ANTLR 4 JAR is invoked via Java to generate C++ lexer/parser sources. This happens automatically as a build step. If you modify a `.g4` file, the generated sources are rebuilt on the next build.
+
+## External Dependencies
+
+All dependencies are fetched automatically by CMake at configure time:
+
+| Library | Description |
+|---|---|
+| [ANTLR4 C++ Runtime](https://github.com/antlr/antlr4) | Parser runtime |
+| [CLI11](https://github.com/CLIUtils/CLI11) | Command-line argument parsing |
+| [JsonCpp](https://github.com/open-source-parsers/jsoncpp) | JSON output for reflection data |
+
+## Project Structure
+
+```
+CMakeLists.txt              Root build file
+CMake/                      CMake modules
+External/                   Third-party dependency declarations
+Source/                     Compiler source code
+  Grammar/                  ANTLR4 .g4 grammar files
+  AzslcMain.cpp             Entry point
+  AzslcEmitter.*            HLSL code emitter
+  AzslcListener.*           ANTLR parse-tree listener
+Platform/                   Platform-specific code and toolchains
+Tests/                      Test suite (CTest-driven)
+  Advanced/                 Complex Python-driven tests
+  Emission/                 Output verification tests
+  Samples/                  Full compilation tests
+  Semantic/                 Semantic analysis tests
+  Syntax/                   Syntax validation tests
+Documentation/              Language and usage documentation
+Scripts/                    Utility scripts
+```
+
+## Further Reading
+
+- [how-to.md](Documentation/how-to.md) - Detailed command-line usage and output format reference
+- [grammar.md](Documentation/grammar.md) - AZSL language specification and grammar notes
+- [Tests](Tests/README.md) - Test conventions and how to add new tests
 
 ## License
 
-For terms please see the LICENSE*.TXT file at the root of this distribution.
+For terms please see the LICENSE\*.TXT files at the root of this distribution.

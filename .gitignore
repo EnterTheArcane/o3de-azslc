@@ -1,5 +1,6 @@
+.antlr/
 .idea/
-.vs
+.vs/
 *.lib
 *.pyc
 *.tmp

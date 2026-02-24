@@ -24,3 +24,4 @@ FetchContent_Declare(jsoncpp
 FetchContent_MakeAvailable(jsoncpp)
 
 add_library(External::jsoncpp ALIAS jsoncpp_static)
+set_target_properties(jsoncpp_static PROPERTIES FOLDER External)

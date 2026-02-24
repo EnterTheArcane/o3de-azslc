@@ -21,6 +21,8 @@ FetchContent_Declare(antlr4
 FetchContent_MakeAvailable(antlr4)
 
 add_library(External::antlr4 ALIAS antlr4_static)
+set_target_properties(antlr4_static PROPERTIES FOLDER External)
 
 find_package(Java COMPONENTS Runtime REQUIRED)
 set(ANTLR4_JAR_PATH "${CMAKE_CURRENT_SOURCE_DIR}/antlr4-4.13.2-complete.jar" CACHE FILEPATH "")
+

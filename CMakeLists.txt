@@ -13,7 +13,6 @@ project(azslc VERSION 1.9.0)
 cmake_policy(SET CMP0168 NEW)
 
 option(AZSLC_VERSION_ONLY "Exit after project() for version extraction" OFF)
-option(ENABLE_TESTS "Enable tests" ON)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 set(CMAKE_CXX_STANDARD 20)
@@ -104,7 +103,4 @@ set_property(
 
 azslc_sign_target(azslc)
 
-if(ENABLE_TESTS)
-    enable_testing()
-    add_subdirectory(Tests)
-endif()
+add_subdirectory(Tests)
