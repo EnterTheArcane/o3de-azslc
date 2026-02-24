@@ -60,25 +60,36 @@ function(azslc_add_simple_tests label compiler_flag expect_fail)
     endforeach()
 endfunction()
 
-block() # Syntax
-    file(GLOB pass_files "${CMAKE_CURRENT_SOURCE_DIR}/Syntax/*.azsl")
-    file(GLOB fail_files "${CMAKE_CURRENT_SOURCE_DIR}/Syntax/AsErrors/*.azsl")
-    azslc_add_simple_tests(Syntax "--syntax" FALSE ${pass_files})
-    azslc_add_simple_tests(Syntax "--syntax" TRUE ${fail_files})
-endblock()
+block() # Advanced
+    file(GLOB_RECURSE test_files "${CMAKE_CURRENT_SOURCE_DIR}/Advanced/*.py")
+    foreach(test_file IN LISTS test_files)
+        if(test_file MATCHES "__pycache__")
+            continue()
+        endif()
 
-block() # Semantic
-    file(GLOB pass_files "${CMAKE_CURRENT_SOURCE_DIR}/Semantic/*.azsl")
-    file(GLOB fail_files "${CMAKE_CURRENT_SOURCE_DIR}/Semantic/AsError/*.azsl")
-    azslc_add_simple_tests(Semantic "--semantic" FALSE ${pass_files})
-    azslc_add_simple_tests(Semantic "--semantic" TRUE ${fail_files})
-endblock()
+        get_filename_component(stem "${test_file}" NAME_WE)
+        if(stem STREQUAL "__init__")
+            continue()
+        endif()
 
-block() # Samples
-    file(GLOB pass_files "${CMAKE_CURRENT_SOURCE_DIR}/Samples/*.azsl")
-    file(GLOB fail_files "${CMAKE_CURRENT_SOURCE_DIR}/Samples/AsError/*.azsl")
-    azslc_add_simple_tests(Samples "" FALSE ${pass_files})
-    azslc_add_simple_tests(Samples "" TRUE ${fail_files})
+        file(RELATIVE_PATH rel_path "${CMAKE_CURRENT_SOURCE_DIR}" "${test_file}")
+        string(REGEX REPLACE "\\.[^.]*$" "" test_name "${rel_path}")
+
+        add_test(
+            NAME "${test_name}"
+            COMMAND ${Python3_EXECUTABLE} "${AZSLC_CTEST_RUNNER}"
+            --compiler "$<TARGET_FILE:azslc>"
+            --file "${test_file}"
+            --mode advanced
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        )
+
+        set_tests_properties("${test_name}" PROPERTIES
+            LABELS "Advanced"
+            SKIP_RETURN_CODE 77
+            TIMEOUT 240
+        )
+    endforeach()
 endblock()
 
 block() # Emission
@@ -127,34 +138,23 @@ block() # Emission Error
     endforeach()
 endblock()
 
-block() # Advanced
-    file(GLOB_RECURSE test_files "${CMAKE_CURRENT_SOURCE_DIR}/Advanced/*.py")
-    foreach(test_file IN LISTS test_files)
-        if(test_file MATCHES "__pycache__")
-            continue()
-        endif()
+block() # Samples
+    file(GLOB pass_files "${CMAKE_CURRENT_SOURCE_DIR}/Samples/*.azsl")
+    file(GLOB fail_files "${CMAKE_CURRENT_SOURCE_DIR}/Samples/AsError/*.azsl")
+    azslc_add_simple_tests(Samples "" FALSE ${pass_files})
+    azslc_add_simple_tests(Samples "" TRUE ${fail_files})
+endblock()
 
-        get_filename_component(stem "${test_file}" NAME_WE)
-        if(stem STREQUAL "__init__")
-            continue()
-        endif()
+block() # Semantic
+    file(GLOB pass_files "${CMAKE_CURRENT_SOURCE_DIR}/Semantic/*.azsl")
+    file(GLOB fail_files "${CMAKE_CURRENT_SOURCE_DIR}/Semantic/AsError/*.azsl")
+    azslc_add_simple_tests(Semantic "--semantic" FALSE ${pass_files})
+    azslc_add_simple_tests(Semantic "--semantic" TRUE ${fail_files})
+endblock()
 
-        file(RELATIVE_PATH rel_path "${CMAKE_CURRENT_SOURCE_DIR}" "${test_file}")
-        string(REGEX REPLACE "\\.[^.]*$" "" test_name "${rel_path}")
-
-        add_test(
-            NAME "${test_name}"
-            COMMAND ${Python3_EXECUTABLE} "${AZSLC_CTEST_RUNNER}"
-            --compiler "$<TARGET_FILE:azslc>"
-            --file "${test_file}"
-            --mode advanced
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        )
-
-        set_tests_properties("${test_name}" PROPERTIES
-            LABELS "Advanced"
-            SKIP_RETURN_CODE 77
-            TIMEOUT 240
-        )
-    endforeach()
+block() # Syntax
+    file(GLOB pass_files "${CMAKE_CURRENT_SOURCE_DIR}/Syntax/*.azsl")
+    file(GLOB fail_files "${CMAKE_CURRENT_SOURCE_DIR}/Syntax/AsErrors/*.azsl")
+    azslc_add_simple_tests(Syntax "--syntax" FALSE ${pass_files})
+    azslc_add_simple_tests(Syntax "--syntax" TRUE ${fail_files})
 endblock()
