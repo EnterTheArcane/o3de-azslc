@@ -43,17 +43,7 @@ endif()
 
 add_executable(azslc)
 
-if(WIN32)
-    set(PAL_PLATFORM_NAME Windows)
-elseif(APPLE)
-    set(PAL_PLATFORM_NAME Mac)
-elseif(UNIX)
-    set(PAL_PLATFORM_NAME Linux)
-endif()
-
 file(GLOB_RECURSE SOURCES
-    Platform/${PAL_PLATFORM_NAME}/*.cpp
-    Platform/${PAL_PLATFORM_NAME}/*.h
     Source/*.cpp
     Source/*.h
     Source/*.tpl
@@ -100,6 +90,8 @@ set_property(
     PROPERTY VS_STARTUP_PROJECT azslc
 )
 
+add_subdirectory(Tests)
+
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
@@ -144,5 +136,3 @@ install(PACKAGE_INFO ${PROJECT_NAME}
     VERSION_SCHEMA simple
     LOWER_CASE_FILE
 )
-
-add_subdirectory(Tests)
