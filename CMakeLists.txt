@@ -12,6 +12,13 @@ project(azslc VERSION 1.9.0)
 
 cmake_policy(SET CMP0168 NEW)
 
+macro(env_set name default type description)
+    if(NOT DEFINED ${name} AND DEFINED ENV{${name}})
+        set(${name} "$ENV{${name}}")
+    endif()
+    set(${name} "${default}" CACHE ${type} "${description}")
+endmacro()
+
 option(AZSLC_VERSION_ONLY "Exit after project() for version extraction" OFF)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
@@ -80,7 +87,7 @@ set_target_properties(azslc PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-azslc_option(AZSLC_OUTPUT_NAME "" STRING "Override the output executable name")
+env_set(AZSLC_OUTPUT_NAME "" STRING "Override the output executable name")
 
 if(AZSLC_OUTPUT_NAME)
     set_target_properties(azslc PROPERTIES OUTPUT_NAME "${AZSLC_OUTPUT_NAME}")
