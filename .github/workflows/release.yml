@@ -39,7 +39,6 @@ jobs:
     with:
       platform: ${{ matrix.platform }}
       architecture: ${{ matrix.architecture }}
-      output-name: AZSLC-${{ matrix.platform }}-${{ matrix.architecture }}
       test: true
       sign: true
     secrets:

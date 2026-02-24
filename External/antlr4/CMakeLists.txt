@@ -16,6 +16,7 @@ FetchContent_Declare(antlr4
     URL_HASH SHA256=c52fb2a90ae082ab5b5ec6b41f6c0e66f691962e4b4f772580e5da678fe51fed
     SOURCE_SUBDIR runtime/Cpp
     DOWNLOAD_NO_PROGRESS ON
+    EXCLUDE_FROM_ALL
 )
 
 FetchContent_MakeAvailable(antlr4)

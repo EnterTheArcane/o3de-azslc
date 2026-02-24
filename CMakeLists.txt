@@ -6,18 +6,11 @@
 #
 #
 
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 4.1)
+
+set(CMAKE_EXPERIMENTAL_EXPORT_PACKAGE_INFO "b80be207-778e-46ba-8080-b23bba22639e")
 
 project(azslc VERSION 1.9.0)
-
-cmake_policy(SET CMP0168 NEW)
-
-macro(env_set name default type description)
-    if(NOT DEFINED ${name} AND DEFINED ENV{${name}})
-        set(${name} "$ENV{${name}}")
-    endif()
-    set(${name} "${default}" CACHE ${type} "${description}")
-endmacro()
 
 option(AZSLC_VERSION_ONLY "Exit after project() for version extraction" OFF)
 
@@ -50,9 +43,17 @@ endif()
 
 add_executable(azslc)
 
+if(WIN32)
+    set(PAL_PLATFORM_NAME Windows)
+elseif(APPLE)
+    set(PAL_PLATFORM_NAME Mac)
+elseif(UNIX)
+    set(PAL_PLATFORM_NAME Linux)
+endif()
+
 file(GLOB_RECURSE SOURCES
-    Platform/*.cpp
-    Platform/*.h
+    Platform/${PAL_PLATFORM_NAME}/*.cpp
+    Platform/${PAL_PLATFORM_NAME}/*.h
     Source/*.cpp
     Source/*.h
     Source/*.tpl
@@ -87,12 +88,6 @@ set_target_properties(azslc PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-env_set(AZSLC_OUTPUT_NAME "" STRING "Override the output executable name")
-
-if(AZSLC_OUTPUT_NAME)
-    set_target_properties(azslc PROPERTIES OUTPUT_NAME "${AZSLC_OUTPUT_NAME}")
-endif()
-
 antlr4_generate(
     TARGET azslc
     LEXER_GRAMMAR Source/Grammar/azslLexer.g4
@@ -103,6 +98,51 @@ antlr4_generate(
 set_property(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTY VS_STARTUP_PROJECT azslc
+)
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+install(
+    TARGETS azslc
+    EXPORT azslc-targets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+install(
+    EXPORT azslc-targets
+    NAMESPACE azslc::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/azslc
+    FILE azslc-targets.cmake
+)
+
+configure_package_config_file(
+    config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/azslc-config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/azslc
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/azslc-config-version.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(
+    FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/azslc-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/azslc-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/azslc
+)
+
+install(PACKAGE_INFO ${PROJECT_NAME}
+    EXPORT azslc-targets
+    VERSION ${PROJECT_VERSION}
+    COMPAT_VERSION ${PROJECT_VERSION_MAJOR}.0.0
+    VERSION_SCHEMA simple
+    LOWER_CASE_FILE
 )
 
 add_subdirectory(Tests)

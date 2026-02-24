@@ -20,9 +20,6 @@ on:
       image:
         type: string
         required: false
-      output-name:
-        type: string
-        required: false
       test:
         type: boolean
         default: true
@@ -119,7 +116,6 @@ jobs:
 
       - name: Configure
         env:
-          AZSLC_OUTPUT_NAME: ${{ inputs.output-name }}
           CMAKE_BUILD_TYPE: Release
           CMAKE_GENERATOR: Ninja
           CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/Platform/${{ inputs.platform }}/Toolchain/${{ inputs.architecture }}.cmake
@@ -128,8 +124,12 @@ jobs:
       - name: Build
         run: cmake --build Build
 
+      - name: Install
+        run: cmake --install Build --prefix Install
+
       - name: Sign
         if: inputs.sign
+        shell: bash
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
@@ -137,7 +137,7 @@ jobs:
           WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
           WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-        run: python .github/scripts/sign.py Build/bin/*
+        run: python .github/scripts/sign.py Install/bin/*
 
       - name: Test
         if: inputs.test
@@ -157,10 +157,15 @@ jobs:
           path: TestResults.xml
           reporter: java-junit
 
+      - name: Package
+        if: inputs.upload
+        shell: bash
+        run: tar -czf AZSLC-${{ inputs.platform }}-${{ inputs.architecture }}.tar.gz -C Install .
+
       - name: Upload Artifacts
         if: inputs.upload
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ inputs.platform }}-${{ inputs.architecture }}
-          path: Build/bin/*
+          path: AZSLC-${{ inputs.platform }}-${{ inputs.architecture }}.tar.gz
           if-no-files-found: error
