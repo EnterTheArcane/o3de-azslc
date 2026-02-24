@@ -8,10 +8,9 @@
 
 cmake_minimum_required(VERSION 3.31)
 
-cmake_policy(SET CMP0077 NEW)
-cmake_policy(SET CMP0135 NEW)
-
 project(azslc VERSION 1.9.0)
+
+cmake_policy(SET CMP0168 NEW)
 
 option(AZSLC_VERSION_ONLY "Exit after project() for version extraction" OFF)
 option(ENABLE_TESTS "Enable tests" ON)
@@ -26,6 +25,8 @@ if(AZSLC_VERSION_ONLY)
 endif()
 
 include(CMake/Utility.cmake)
+
+include(CMake/ANTLR.cmake)
 include(CMake/CodeSigning.cmake)
 
 if(MSVC)
