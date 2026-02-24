@@ -160,12 +160,12 @@ jobs:
       - name: Package
         if: inputs.upload
         shell: bash
-        run: tar -czf AZSLC-${{ inputs.platform }}-${{ inputs.architecture }}.tar.gz -C Install .
+        run: tar -czf ${{ inputs.platform }}-${{ inputs.architecture }}.tar.gz -C Install .
 
       - name: Upload Artifacts
         if: inputs.upload
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ inputs.platform }}-${{ inputs.architecture }}
-          path: AZSLC-${{ inputs.platform }}-${{ inputs.architecture }}.tar.gz
+          path: ${{ inputs.platform }}-${{ inputs.architecture }}.tar.gz
           if-no-files-found: error
