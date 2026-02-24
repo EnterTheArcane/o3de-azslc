@@ -236,8 +236,7 @@ def main():
 
     rc = MODE_HANDLERS[args.mode](args)
 
-    # WIP tests: convert failures to skips so CTest does not count them
-    # as regressions.
+    # WIP tests: convert failures to skips so CTest does not count them as regressions.
     if rc == EXIT_FAIL and args.wip:
         print(f"WIP/TODO - failure treated as skip: {args.file}")
         rc = EXIT_SKIP
