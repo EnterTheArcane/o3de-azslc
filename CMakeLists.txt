@@ -24,9 +24,6 @@ if(AZSLC_VERSION_ONLY)
 endif()
 
 include(CTest)
-include(CMake/Utility.cmake)
-include(CMake/ANTLR.cmake)
-include(CMake/CodeSigning.cmake)
 
 if(MSVC)
     add_compile_options(
@@ -100,7 +97,5 @@ set_property(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     PROPERTY VS_STARTUP_PROJECT azslc
 )
-
-azslc_sign_target(azslc)
 
 add_subdirectory(Tests)

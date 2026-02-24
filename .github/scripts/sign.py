@@ -13,28 +13,26 @@ Imports a code signing certificate and signs the specified files.
 Usage:
     python sign.py <file> [<file> ...]
 
-Darwin:
+Apple:
     Decodes APPLE_CERTIFICATE (base64 .p12) into a temporary keychain,
     then signs each file with `codesign` using APPLE_SIGNING_IDENTITY.
+
+Linux:
+    No-op (code signing is not supported).
 
 Windows:
     Decodes WINDOWS_CERTIFICATE (base64 .pfx) into the user certificate
     store via certutil, then signs each file with `signtool` using
     WINDOWS_CERTIFICATE_THUMBPRINT.
 
-Linux:
-    No-op (code signing is not supported).
-
 Environment variables:
-    RUNNER_TEMP                      Temp directory (provided by GitHub Actions)
+    APPLE_CERTIFICATE                Base64-encoded .p12 certificate
+    APPLE_CERTIFICATE_PASSWORD       Password for the .p12 file
+    APPLE_SIGNING_IDENTITY           Code signing identity string
 
-    APPLE_CERTIFICATE                Base64-encoded .p12 certificate (macOS)
-    APPLE_CERTIFICATE_PASSWORD       Password for the .p12 file (macOS)
-    APPLE_SIGNING_IDENTITY           Code signing identity string (macOS)
-
-    WINDOWS_CERTIFICATE              Base64-encoded .pfx certificate (Windows)
-    WINDOWS_CERTIFICATE_PASSWORD     Password for the .pfx file (Windows)
-    WINDOWS_CERTIFICATE_THUMBPRINT   SHA-1 certificate thumbprint (Windows)
+    WINDOWS_CERTIFICATE              Base64-encoded .pfx certificate
+    WINDOWS_CERTIFICATE_PASSWORD     Password for the .pfx file
+    WINDOWS_CERTIFICATE_THUMBPRINT   SHA-1 certificate thumbprint
 """
 
 import argparse
@@ -48,13 +46,11 @@ import tempfile
 
 
 def run(*args):
-    print(f"  $ {' '.join(args)}")
+    print(f"> {' '.join(args)}")
     subprocess.run(args, check=True)
 
 
-# -- macOS -----------------------------------------------------------------
-
-def import_certificate_darwin():
+def import_certificate_apple():
     cert_b64 = os.environ.get("APPLE_CERTIFICATE")
     if not cert_b64:
         print("APPLE_CERTIFICATE is not set; skipping certificate import.")
@@ -83,7 +79,7 @@ def import_certificate_darwin():
             os.remove(cert_path)
 
 
-def sign_darwin(files):
+def sign_apple(files):
     identity = os.environ.get("APPLE_SIGNING_IDENTITY", "-")
 
     sign_args = ["--force", "--sign", identity]
@@ -98,8 +94,6 @@ def sign_darwin(files):
         print(f"Signing {path}")
         run("codesign", *sign_args, path)
 
-
-# -- Windows ---------------------------------------------------------------
 
 def import_certificate_windows():
     cert_b64 = os.environ.get("WINDOWS_CERTIFICATE")
@@ -142,8 +136,6 @@ def sign_windows(files):
         run("signtool", *sign_args, path)
 
 
-# -- Main ------------------------------------------------------------------
-
 def main():
     parser = argparse.ArgumentParser(description="Import certificates and sign files.")
     parser.add_argument("files", nargs="+", help="Files to sign")
@@ -152,8 +144,8 @@ def main():
     system = platform.system()
 
     if system == "Darwin":
-        import_certificate_darwin()
-        sign_darwin(args.files)
+        import_certificate_apple()
+        sign_apple(args.files)
     elif system == "Windows":
         import_certificate_windows()
         sign_windows(args.files)
