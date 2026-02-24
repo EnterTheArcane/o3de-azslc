@@ -6,15 +6,16 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
-import os
-from clr import *
-sys.path.append("..")
-import testfuncs
 
-def test(thefile, compilerPath, silent):
+import os
+
+from Shared import compiler
+from Shared.colors import *
+
+
+def test(thefile, compiler_path, silent):
     '''return number of successes'''
-    symbols, ok = testfuncs.buildAndGetSymbols(thefile, compilerPath, silent)
+    symbols, ok = compiler.build_and_get_symbols(thefile, compiler_path, silent)
     if ok:
         try:
             ok = symbols["Symbol '/g_s'"]['kind'] == 'Variable'
@@ -22,26 +23,32 @@ def test(thefile, compilerPath, silent):
 
             if not silent:
                 if not ok:
-                    print (fg.RED+ "ERR: g_s type could not be validated"+ style.RESET_ALL)
+                    print(Foreground.RED + "ERR: g_s type could not be validated" + Style.RESET_ALL)
                 else:
-                    print (style.BRIGHT+ "OK! "+ style.RESET_ALL)
+                    print(Style.BRIGHT + "OK! " + Style.RESET_ALL)
         except Exception as e:
-            print (fg.RED+ "Err: Parsed --dumpsym may lack some expected keys"+ style.RESET_ALL, e)
+            print(Foreground.RED + "Err: Parsed --dumpsym may lack some expected keys" + Style.RESET_ALL, e)
     return ok
 
-result = 0  # to define for sub-tests
-resultFailed = 0
-def doTests(compiler, silent, azdxcpath):
+
+result = 0  # to define for subtests
+result_failed = 0
+
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    if test(os.path.join(workDir, "../Semantic/combined-vardecl-udt.azsl"), compiler, silent): result += 1
-    else: resultFailed += 1
+    if test(os.path.join(work_dir, "../Semantic/combined-vardecl-udt.azsl"), compiler, silent):
+        result += 1
+    else:
+        result_failed += 1
+
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

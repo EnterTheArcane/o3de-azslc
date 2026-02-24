@@ -144,20 +144,19 @@ All dependencies are fetched automatically by CMake at configure time:
 CMakeLists.txt              Root build file
 CMake/                      CMake modules
 External/                   Third-party dependency declarations
+Documentation/              Language and usage documentation
+Platform/                   Platform-specific code and toolchains
 Source/                     Compiler source code
   Grammar/                  ANTLR4 .g4 grammar files
   AzslcMain.cpp             Entry point
   AzslcEmitter.*            HLSL code emitter
   AzslcListener.*           ANTLR parse-tree listener
-Platform/                   Platform-specific code and toolchains
 Tests/                      Test suite (CTest-driven)
   Advanced/                 Complex Python-driven tests
   Emission/                 Output verification tests
   Samples/                  Full compilation tests
   Semantic/                 Semantic analysis tests
   Syntax/                   Syntax validation tests
-Documentation/              Language and usage documentation
-Scripts/                    Utility scripts
 ```
 
 ## Further Reading

@@ -31,13 +31,14 @@ import io
 import os
 import sys
 
-# Make the Tests/ directory importable so that testfuncs, testhelper and clr
-# can be found regardless of the working directory CTest happens to use.
+# Make the Tests/ directory importable so that the Shared package
+# (compiler, emission, colors, etc.) can be found regardless of the
+# working directory CTest happens to use.
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 if TESTS_DIR not in sys.path:
     sys.path.insert(0, TESTS_DIR)
 
-import testfuncs
+from Shared import compiler
 
 EXIT_PASS = 0
 EXIT_FAIL = 1
@@ -50,8 +51,8 @@ def handle_simple(args):
     if args.compiler_flag:
         options.append(args.compiler_flag)
 
-    out, err, code = testfuncs.launchCompiler(args.compiler, options, silent=True)
-    okpreds, numpreds = testfuncs.executePredicateChecks(out)
+    out, err, code = compiler.launch_compiler(args.compiler, options, silent=True)
+    okpreds, numpreds = compiler.execute_predicate_checks(out)
     fine = (code == 0) and okpreds
 
     if args.expect_fail:
@@ -59,7 +60,7 @@ def handle_simple(args):
             # Semantic error tests must still have valid *syntax*.
             if args.compiler_flag == "--semantic":
                 syn_opts = [args.file, "--syntax"]
-                _, _, syn_code = testfuncs.launchCompiler(
+                _, _, syn_code = compiler.launch_compiler(
                     args.compiler, syn_opts, silent=True
                 )
                 if syn_code != 0:
@@ -72,14 +73,14 @@ def handle_simple(args):
             # Verify error code if #EC annotation is present in the source.
             with io.open(args.file, "r", encoding="latin-1") as f:
                 azsl_code = f.read()
-            expected_ec = testfuncs.findTokenToInt(azsl_code, r"#EC\s\d*")
+            expected_ec = compiler.find_token_to_int(azsl_code, r"#EC\s\d*")
             if expected_ec == -2:
                 print(
                     f"FAIL: #EC annotation is not a valid integer: {args.file}"
                 )
                 return EXIT_FAIL
             if expected_ec not in (-1,):
-                actual_ec = testfuncs.findTokenToInt(
+                actual_ec = compiler.find_token_to_int(
                     err.decode("utf-8"), r"error\s#\d*:"
                 )
                 if actual_ec != expected_ec:
@@ -111,33 +112,33 @@ def handle_simple(args):
 # Emission Mode
 def handle_emission(args):
     """Compile and verify the emitted code against .txt pattern files."""
-    import testhelper
+    from Shared import emission
 
-    testhelper.failList = []
-    result = testhelper.verifyEmissionPatterns(
-        args.file, args.compiler, silent=True, argList=[]
+    emission.fail_list = []
+    result = emission.verify_emission_patterns(
+        args.file, args.compiler, silent=True, arg_list=[]
     )
     if result > 0:
         print(f"PASS: {args.file} ({result} pattern file(s) verified)")
         return EXIT_PASS
     print(f"FAIL: Emission pattern verification failed: {args.file}")
-    testhelper.printFailedTestList(False)
+    emission.print_failed_test_list(False)
     return EXIT_FAIL
 
 
 def handle_emission_error(args):
     """Compile expecting failure and verify the error code."""
-    import testhelper
+    from Shared import emission
 
-    testhelper.failList = []
-    result = testhelper.compileAndExpectError(
-        args.file, args.compiler, silent=True, argList=[]
+    emission.fail_list = []
+    result = emission.compile_and_expect_error(
+        args.file, args.compiler, silent=True, arg_list=[]
     )
     if result > 0:
         print(f"PASS: {args.file} (failed with expected error code)")
         return EXIT_PASS
     print(f"FAIL: Emission error test: {args.file}")
-    testhelper.printFailedTestList(False)
+    emission.print_failed_test_list(False)
     return EXIT_FAIL
 
 
@@ -147,7 +148,7 @@ def handle_advanced(args):
     module_dir = os.path.dirname(test_file)
     module_name = os.path.splitext(os.path.basename(test_file))[0]
 
-    # Put the module's own directory on sys.path (mirrors testapp.py).
+    # Put the module's own directory on sys.path (mirrors runner.py).
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
 
@@ -162,13 +163,13 @@ def handle_advanced(args):
         sys.modules[module_name] = module
         spec.loader.exec_module(module)
 
-        if not hasattr(module, "doTests"):
-            print(f"SKIP: No doTests() function in {args.file}")
+        if not hasattr(module, "do_tests"):
+            print(f"SKIP: No do_tests() function in {args.file}")
             return EXIT_SKIP
 
-        module.doTests(args.compiler, True, args.az3rdparty)
+        module.do_tests(args.compiler, True)
         passed = getattr(module, "result", 0)
-        failed = getattr(module, "resultFailed", 0)
+        failed = getattr(module, "result_failed", 0)
     finally:
         os.chdir(old_cwd)
         sys.path[:] = [p for p in sys.path if p != module_dir]
@@ -226,11 +227,6 @@ def main():
         action="store_true",
         default=False,
         help="Treat failures as skipped (WIP / TODO)",
-    )
-    parser.add_argument(
-        "--az3rdparty",
-        default=None,
-        help="Path to Amazon DXC (advanced tests)",
     )
 
     args = parser.parse_args()

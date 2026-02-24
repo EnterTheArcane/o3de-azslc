@@ -14,9 +14,11 @@ is covered by the following license:
 
 ## Overview
 
-Tests are run via **CTest** and are automatically registered when the project is configured with `BUILD_TESTING=ON` (the default). A Python-based runner (`ctest-runner.py`) adapts the existing test infrastructure to CTest.
+Tests are run via **CTest** and are automatically registered when the project is configured with `BUILD_TESTING=ON` (the default). A Python-based runner (
+`ctest-runner.py`) adapts the existing test infrastructure to CTest.
 
-The test suite uses **convention over configuration**: you do not need to maintain a list of tests. Tests are discovered automatically from filesystem structure and naming conventions.
+The test suite uses **convention over configuration**: you do not need to maintain a list of tests. Tests are discovered automatically from filesystem structure
+and naming conventions.
 
 ## Running Tests
 
@@ -45,13 +47,15 @@ ctest --test-dir Build --output-on-failure
 
 ### Advanced (`Tests/Advanced/`)
 
-Complex, multi-step test scripts written in Python. Each `.py` file must define a `doTests(compiler, silent, az3rdParty)` function and report results via module-level `result` (passed) and `resultFailed` (failed) counters.
+Complex, multi-step test scripts written in Python. Each `.py` file must define a `doTests(compiler, silent)` function and report results via module-level
+`result` (passed) and `resultFailed` (failed) counters.
 
 These tests may invoke the compiler multiple times, chain with DXC, or perform other sophisticated validation.
 
 ### Emission (`Tests/Emission/`)
 
-Tests that verify the **emitted HLSL output** matches expected patterns. Each `.azsl` file is compiled, and the output is compared against corresponding `.txt` pattern files.
+Tests that verify the **emitted HLSL output** matches expected patterns. Each `.azsl` file is compiled, and the output is compared against corresponding `.txt`
+pattern files.
 
 - `Emission/*.azsl` - Compiled and verified against pattern files.
 - `Emission/AsError/*.azsl` - Expected to fail, with error code verification.
@@ -81,12 +85,12 @@ Tests that the AZSL grammar parser accepts or rejects input correctly. The compi
 
 ## Naming Conventions
 
-| Convention | Meaning |
-|---|---|
-| Located in an `AsError` or `AsErrors` directory | Test expects the compiler to **reject** the input |
-| Filename starts with `wip-` | Work-in-progress; failures are treated as **skipped** instead of failed |
-| `.azsl` extension | Shader source file to compile |
-| `.py` extension (Advanced only) | Python test script |
+| Convention                                      | Meaning                                                                 |
+|-------------------------------------------------|-------------------------------------------------------------------------|
+| Located in an `AsError` or `AsErrors` directory | Test expects the compiler to **reject** the input                       |
+| Filename starts with `wip-`                     | Work-in-progress; failures are treated as **skipped** instead of failed |
+| `.azsl` extension                               | Shader source file to compile                                           |
+| `.py` extension (Advanced only)                 | Python test script                                                      |
 
 ## Adding New Tests
 
@@ -107,13 +111,6 @@ To add a test that should **fail**, place it in the corresponding `AsError`/`AsE
 ### Advanced Tests
 
 1. Create a `.py` file anywhere under `Tests/Advanced/`.
-2. Implement a `doTests(compiler, silent, az3rdparty)` function.
-3. Set module-level `result` and `resultFailed` counters.
+2. Implement a `do_tests(compiler, silent)` function.
+3. Set module-level `result` and `result_failed` counters.
 4. Re-run CMake configure and test.
-
-## Timeouts
-
-| Category | Timeout |
-|---|---|
-| Advanced | 240 seconds |
-| Emission, Samples, Semantic, Syntax | 60 seconds |

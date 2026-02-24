@@ -6,16 +6,15 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
+
 import os
-sys.path.append("..")
-sys.path.append("../..")
-from clr import *
-import testfuncs
+
+from Shared import compiler
+from Shared.colors import *
 
 
-def verifyInputLayouts(thefile, compilerPath, silent):
-    j, ok = testfuncs.buildAndGetJson(thefile, compilerPath, silent, ["--ia"])
+def verify_input_layouts(thefile, compiler_path, silent):
+    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--ia"])
     if ok:
         predicates = []
         # check all references of func()
@@ -52,25 +51,29 @@ def verifyInputLayouts(thefile, compilerPath, silent):
         predicates.append(lambda: j["inputLayouts"][2]["streams"][1]["semanticName"] == "COLOR")
         predicates.append(lambda: j["inputLayouts"][2]["streams"][1]["systemValue"] == False)
 
-        if not silent: print (fg.CYAN+ style.BRIGHT+ "input assembler layouts verification..."+ style.RESET_ALL)
-        ok = testfuncs.verifyAllPredicates(predicates, j)
+        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler layouts verification..." + Style.RESET_ALL)
+        ok = compiler.verify_all_predicates(predicates, j)
     return ok
 
-result = 0  # to define for sub-tests
-resultFailed = 0
 
-def doTests(compiler, silent, azdxcpath):
+result = 0  # to define for subtests
+result_failed = 0
+
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    if verifyInputLayouts(os.path.join(workDir, "input-assembler.azsl"), compiler, silent): result += 1
-    else: resultFailed += 1
+    if verify_input_layouts(os.path.join(work_dir, "input-assembler.azsl"), compiler, silent):
+        result += 1
+    else:
+        result_failed += 1
 
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

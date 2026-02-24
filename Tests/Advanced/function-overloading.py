@@ -6,13 +6,13 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
-import os
-from clr import *
-sys.path.append("..")
-import testfuncs
 
-'''  the test looks like this↓ so we want to verify symbols and their referencess
+import os
+
+from Shared import compiler
+from Shared.colors import *
+
+'''  the test looks like this↓ so we want to verify symbols and their references
 int func(int i) {..}  // 1
 
 int func(float f) {..}  // 2
@@ -23,9 +23,10 @@ float4 main() : SV_Target0
     g_func(1.5);  // ref to 2
 '''
 
-def execTest(thefile, compilerPath, silent):
-    '''return number of successes'''
-    symbols, ok = testfuncs.buildAndGetSymbols(thefile, compilerPath, silent)
+
+def exec_test(thefile, compiler_path, silent):
+    """return number of successes"""
+    symbols, ok = compiler.build_and_get_symbols(thefile, compiler_path, silent)
     # check the specific stuff we want to verify with this test
     if ok:
         try:
@@ -54,27 +55,32 @@ def execTest(thefile, compilerPath, silent):
             ok = ok and symbols["Symbol '/f'"]['references'][0]['line'] == 26
 
             if not ok:
-                print (style.DIM + fg.YELLOW + "ERR: all expected symbol founds, but their semantic understanding seems off" + style.RESET_ALL)
+                print(Style.DIM + Foreground.YELLOW + "ERR: all expected symbol founds, but their semantic understanding seems off" + Style.RESET_ALL)
             else:
-                print (style.BRIGHT + "OK! all symbols semantics correctly understood" + style.RESET_ALL)
+                print(Style.BRIGHT + "OK! all symbols semantics correctly understood" + Style.RESET_ALL)
         except Exception as e:
-            print (fg.RED + "Err: Parsed --dumpsym may lack some expected keys" + style.RESET_ALL, e)
+            print(Foreground.RED + "Err: Parsed --dumpsym may lack some expected keys" + Style.RESET_ALL, e)
     return 1 if ok else 0
 
-result = 0  # to define for sub-tests
-resultFailed = 0
-def doTests(compiler, silent, azdxcpath):
+
+result = 0  # to define for subtests
+result_failed = 0
+
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    if execTest(os.path.join(workDir, "function-overloading.azsl"), compiler, silent): result += 1
-    else: resultFailed += 1
+    if exec_test(os.path.join(work_dir, "function-overloading.azsl"), compiler, silent):
+        result += 1
+    else:
+        result_failed += 1
 
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

@@ -6,82 +6,92 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
+
 import os
-sys.path.append("..")
-from clr import *
-import testfuncs
+
+from Shared import compiler
+from Shared.colors import *
 
 '''
 Validates the functionality of the [[pad_to(N)]] attribute for struct, class and SRGs.
 '''
 
-def check_StructuredBuffer_Vs_ConstantBuffer_Padding(thefile, compilerPath, silent, expectedSize):
+
+def check_structured_buffer_vs_constant_buffer_padding(thefile, compiler_path, silent, expected_size):
     # Compile the shader with --srg and check that the final size of the struct
     # is 256 for both the StructureBuffer<MyStruct> DemoSrg::m_mySB, and MyStruct DemoSrg::m_myStruct
-    j, ok = testfuncs.buildAndGetJson(thefile, compilerPath, silent, ["--srg"])
+    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--srg"])
     if ok:
-        if not silent: print (fg.CYAN+ style.BRIGHT+ "checkPadding: Verifying struct sizes..."+ style.RESET_ALL)
+        if not silent: print(Foreground.CYAN + Style.BRIGHT + "checkPadding: Verifying struct sizes..." + Style.RESET_ALL)
 
         predicates = []
-        predicates.append(lambda expectedSize=expectedSize: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["stride"] == expectedSize)
+        predicates.append(lambda expected=expected_size: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["stride"] == expected)
         predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["type"] == "StructuredBuffer<MyStruct>")
 
-        predicates.append(lambda expectedSize=expectedSize: j["ShaderResourceGroups"][0]["inputsForSRGConstants"][27]["constantByteSize"] == expectedSize)
+        predicates.append(lambda expected=expected_size: j["ShaderResourceGroups"][0]["inputsForSRGConstants"][27]["constantByteSize"] == expected)
         predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSRGConstants"][27]["typeName"] == "/MyStruct")
 
-        ok = testfuncs.verifyAllPredicates(predicates, j, silent)
+        ok = compiler.verify_all_predicates(predicates, j, silent)
         if ok and not silent:
-            print (style.BRIGHT+ "OK! "+ str(len(predicates)) + " checkPadding: All sizes were the same." + style.RESET_ALL)
+            print(Style.BRIGHT + "OK! " + str(len(predicates)) + " checkPadding: All sizes were the same." + Style.RESET_ALL)
     return ok
 
 
-def check_SRG_Padding(thefile, compilerPath, silent, expectedSize):
-    j, ok = testfuncs.buildAndGetJson(thefile, compilerPath, silent, ["--srg"])
+def check_srg_padding(thefile, compiler_path, silent, expected_size):
+    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--srg"])
     if ok:
-        if not silent: print (fg.CYAN+ style.BRIGHT+ "check_SRG_Padding: Verifying SRG sizes..."+ style.RESET_ALL)
+        if not silent: print(Foreground.CYAN + Style.BRIGHT + "check_SRG_Padding: Verifying SRG sizes..." + Style.RESET_ALL)
 
-        #The offset + size of the last variable in each SRG must match the value of @expectedSize.
-        srg1LastVariableOffset = j["ShaderResourceGroups"][0]["inputsForSRGConstants"][-1]["constantByteOffset"]
-        srg1LastVariableSize= j["ShaderResourceGroups"][0]["inputsForSRGConstants"][-1]["constantByteSize"]
-        srg1Size = srg1LastVariableOffset + srg1LastVariableSize
+        # The offset + size of the last variable in each SRG must match the value of @expectedSize.
+        srg1_last_variable_offset = j["ShaderResourceGroups"][0]["inputsForSRGConstants"][-1]["constantByteOffset"]
+        srg1_last_variable_size = j["ShaderResourceGroups"][0]["inputsForSRGConstants"][-1]["constantByteSize"]
+        srg1_size = srg1_last_variable_offset + srg1_last_variable_size
 
-        srg2LastVariableOffset = j["ShaderResourceGroups"][1]["inputsForSRGConstants"][-1]["constantByteOffset"]
-        srg2LastVariableSize= j["ShaderResourceGroups"][1]["inputsForSRGConstants"][-1]["constantByteSize"]
-        srg2Size = srg2LastVariableOffset + srg2LastVariableSize
+        srg2_last_variable_offset = j["ShaderResourceGroups"][1]["inputsForSRGConstants"][-1]["constantByteOffset"]
+        srg2_last_variable_size = j["ShaderResourceGroups"][1]["inputsForSRGConstants"][-1]["constantByteSize"]
+        srg2_size = srg2_last_variable_offset + srg2_last_variable_size
 
-        ok = (srg1Size == srg2Size) and (srg1Size == expectedSize)
+        ok = (srg1_size == srg2_size) and (srg1_size == expected_size)
         if not ok and not silent:
-            errorMsg = f"Was expecting both SRG sizes to be {expectedSize}, instead got SRG1 size={srg1Size} and SRG2 size={srg2Size}"
-            print (fg.RED + "FAIL (" + errorMsg + "):" + style.RESET_ALL)
+            error_msg = f"Was expecting both SRG sizes to be {expected_size}, instead got SRG1 size={srg1_size} and SRG2 size={srg2_size}"
+            print(Foreground.RED + "FAIL (" + error_msg + "):" + Style.RESET_ALL)
 
         if ok and not silent:
-            print (style.BRIGHT+ "OK! check_SRG_Padding: All sizes were the same." + style.RESET_ALL)
+            print(Style.BRIGHT + "OK! check_SRG_Padding: All sizes were the same." + Style.RESET_ALL)
     return ok
 
 
-result = 0  # to define for sub-tests
-resultFailed = 0
-def doTests(compiler, silent, azdxcpath):
+result = 0  # to define for subtests
+result_failed = 0
+
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    if not silent: print ("testing [[pad_to(256)]] attribute...")
-    if check_StructuredBuffer_Vs_ConstantBuffer_Padding(os.path.join(workDir, "struct-pad-to-256.azsl"), compiler, silent, 256): result += 1
-    else: resultFailed += 1
+    if not silent: print("testing [[pad_to(256)]] attribute...")
+    if check_structured_buffer_vs_constant_buffer_padding(os.path.join(work_dir, "struct-pad-to-256.azsl"), compiler, silent, 256):
+        result += 1
+    else:
+        result_failed += 1
 
-    if not silent: print ("testing [[pad_to(252)]] attribute...")
-    if check_StructuredBuffer_Vs_ConstantBuffer_Padding(os.path.join(workDir, "struct-pad-to-252.azsl"), compiler, silent, 252): result += 1
-    else: resultFailed += 1
+    if not silent: print("testing [[pad_to(252)]] attribute...")
+    if check_structured_buffer_vs_constant_buffer_padding(os.path.join(work_dir, "struct-pad-to-252.azsl"), compiler, silent, 252):
+        result += 1
+    else:
+        result_failed += 1
 
-    if not silent: print ("testing [[pad_to(N)]] for SRGs...")
-    if check_SRG_Padding(os.path.join(workDir, "srg-pad-to-256.azsl"), compiler, silent, 256): result += 1
-    else: resultFailed += 1
+    if not silent: print("testing [[pad_to(N)]] for SRGs...")
+    if check_srg_padding(os.path.join(work_dir, "srg-pad-to-256.azsl"), compiler, silent, 256):
+        result += 1
+    else:
+        result_failed += 1
+
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

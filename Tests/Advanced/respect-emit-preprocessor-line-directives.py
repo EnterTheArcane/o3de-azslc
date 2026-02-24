@@ -6,12 +6,12 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
+
 import os
 import re
-sys.path.append("..")
-from clr import *
-import testfuncs
+
+from Shared import compiler
+from Shared.colors import *
 
 '''
 This test suite validates that azslc respects the preprocessor
@@ -21,146 +21,159 @@ The idea is that when reporting errors it should produce meaningful filenames
 and line locations from the orignal file where the error is actually coming from.
 '''
 
-def validateFilesAppearInLineDirectives(hlslContent, fileList, silent):
+
+def validate_files_appear_in_line_directives(hlsl_content, file_list, silent):
     """
     @fileList List of files to search for in @hlslContent.
               It is treated as a stack and we expect the line matching
               to occur in the order as they appear in this list              
     """
     regexp = re.compile('#\s*line\s+\d+\s*"(.*)"$')
-    hlslLines = hlslContent.splitlines()
+    hlsl_lines = hlsl_content.splitlines()
     found0 = False
-    for hlslLine in hlslLines:
+    for hlslLine in hlsl_lines:
         m = regexp.match(hlslLine)
         if not m:
             continue
-        f0 = m.group(1).endswith(fileList[0])  # check top of stack
-        f1 = len(fileList) > 1 and m.group(1).endswith(fileList[1]) # or second position to allow progression in the list
+        f0 = m.group(1).endswith(file_list[0])  # check top of stack
+        f1 = len(file_list) > 1 and m.group(1).endswith(file_list[1])  # or second position to allow progression in the list
         if f0 or f1:
-            if found0 and f1: del fileList[0]  # forget about a file only after its potential repetition is finished
-            if len(fileList) == 0:
-                break;
+            if found0 and f1: del file_list[0]  # forget about a file only after its potential repetition is finished
+            if len(file_list) == 0:
+                break
             found0 = f0
-        else: print(fg.RED + f"problem: was expecting to find {fileList[0]} or {fileList[1]} (but got {m.group(1).rsplit('/',1)[-1]})" + fg.RESET)
-    return len(fileList) <= 1
+        else:
+            print(
+                Foreground.RED + f"problem: was expecting to find {file_list[0]} or {file_list[1]} (but got {m.group(1).rsplit('/', 1)[-1]})" + Foreground.RESET)
+    return len(file_list) <= 1
 
-def testSampleFileCompilationEmitsPreprocessorLineDirectives(theFile, compilerPath, silent):
+
+def test_sample_file_compilation_emits_preprocessor_line_directives(the_file, compiler_path, silent):
     if not silent:
-        print (fg.CYAN+ style.BRIGHT+
-               "testSampleFileCompilationEmitsPreprocessorLineDirectives: "+
-               "Verifying sample file compiles and #line directives are emitted..."+
-               style.RESET_ALL)
-    stdout, ok = testfuncs.buildAndGet(theFile, compilerPath, silent, [])
+        print(Foreground.CYAN + Style.BRIGHT +
+              "testSampleFileCompilationEmitsPreprocessorLineDirectives: " +
+              "Verifying sample file compiles and #line directives are emitted..." +
+              Style.RESET_ALL)
+    stdout, ok = compiler.build_and_get(the_file, compiler_path, silent, [])
     stdout = stdout.decode('utf-8')
-    ok = validateFilesAppearInLineDirectives(stdout,
-                                             ["srg_semantics.azsli", "level0.azsli", "level1.azsli", "level2.azsli", "main.azsl"],
-                                             silent)
+    ok = validate_files_appear_in_line_directives(stdout,
+                                                  ["srg_semantics.azsli", "level0.azsli", "level1.azsli", "level2.azsli", "main.azsl"],
+                                                  silent)
     return ok
 
-def CreateTmpFileWithSyntaxError(theFile, goodSearchLine, badReplaceLine):
+
+def create_tmp_file_with_syntax_error(the_file, good_search_line, bad_replace_line):
     """
     Takes a reference file and creates of temporary clone file with a known good line (@goodSearchLine)
     that gets replaced with a known bad line (@badReplaceLine)
     """
-    dirName, fileName = os.path.split(theFile)
-    tmpFilePath = os.path.join(dirName, "{}.tmp".format(fileName))
-    if os.path.exists(tmpFilePath): os.remove(tmpFilePath)
-    
-    foundGoodSearchLine = False
-    tmpFileContent = []
-    with open(theFile) as fp:
+    dir_name, file_name = os.path.split(the_file)
+    tmp_file_path = os.path.join(dir_name, "{}.tmp".format(file_name))
+    if os.path.exists(tmp_file_path): os.remove(tmp_file_path)
+
+    found_good_search_line = False
+    tmp_file_content = []
+    with open(the_file) as fp:
         for cnt, line in enumerate(fp):
             line = line.rstrip('\r\n')
-            if line == goodSearchLine:
-                tmpFileContent.append("{}\n".format(badReplaceLine))
-                foundGoodSearchLine = True
+            if line == good_search_line:
+                tmp_file_content.append("{}\n".format(bad_replace_line))
+                found_good_search_line = True
             else:
-                tmpFileContent.append("{}\n".format(line))
-    if not foundGoodSearchLine:
-        print(fg.RED + f"fail: {goodSearchLine} not found in {fileName}" + fg.RESET)
+                tmp_file_content.append("{}\n".format(line))
+    if not found_good_search_line:
+        print(Foreground.RED + f"fail: {good_search_line} not found in {file_name}" + Foreground.RESET)
         return None
-    
-    with open(tmpFilePath, 'w') as outFp:
-        outFp.writelines(tmpFileContent)
-    return tmpFilePath
 
-def testErrorReportUsesPreprocessorLineDirectives(theFile, compilerPath, silent, goodSearchLine, badReplaceLine, searchFilename, errorType):
+    with open(tmp_file_path, 'w') as outFp:
+        outFp.writelines(tmp_file_content)
+    return tmp_file_path
+
+
+def test_error_report_uses_preprocessor_line_directives(the_file, compiler_path, silent, good_search_line, bad_replace_line, search_filename, error_type):
     """
     In this test an error will be injected at a specfic line and expect the stderr
     output produced by azslc to mention that the failure comes from one of the included files
     instead of the input file.
     """
     if not silent:
-        print (fg.CYAN+ style.BRIGHT+
-               "testSyntaxErrorReportUsesPreprocessorLineDirectives: "+
-               "Verifying syntax error report..."+ style.RESET_ALL)
-    filePathOfTmpFile = CreateTmpFileWithSyntaxError(theFile, goodSearchLine, badReplaceLine)
-    if not filePathOfTmpFile:
-        return False;
+        print(Foreground.CYAN + Style.BRIGHT +
+              "testSyntaxErrorReportUsesPreprocessorLineDirectives: " +
+              "Verifying syntax error report..." + Style.RESET_ALL)
+    file_path_of_tmp_file = create_tmp_file_with_syntax_error(the_file, good_search_line, bad_replace_line)
+    if not file_path_of_tmp_file:
+        return False
     if not silent:
-        print (fg.CYAN+ style.BRIGHT+
-               "testSyntaxErrorReportUsesPreprocessorLineDirectives: "+
-               "Compiling and expecting errors..."+ style.RESET_ALL)
-    stderr, failed = testfuncs.buildAndGetError(filePathOfTmpFile, compilerPath, silent, [])
+        print(Foreground.CYAN + Style.BRIGHT +
+              "testSyntaxErrorReportUsesPreprocessorLineDirectives: " +
+              "Compiling and expecting errors..." + Style.RESET_ALL)
+    stderr, failed = compiler.build_and_get_error(file_path_of_tmp_file, compiler_path, silent, [])
     stderr = stderr.decode('utf-8')
     if not failed:
-        print(fg.RED + "fail: expected non-buildable didn't report a build error." + fg.RESET)
+        print(Foreground.RED + "fail: expected non-buildable didn't report a build error." + Foreground.RESET)
         return False
     if not silent:
-        print (fg.CYAN+ style.BRIGHT+
-               "testSyntaxErrorReportUsesPreprocessorLineDirectives: "+
-               "Good, good compiler error, now let's make sure the source file is mentioned..."+ style.RESET_ALL)
-    if not searchFilename in stderr:
-        print(fg.RED + f"fail: didn't find {searchFilename} in stderr" + fg.RESET)
+        print(Foreground.CYAN + Style.BRIGHT +
+              "testSyntaxErrorReportUsesPreprocessorLineDirectives: " +
+              "Good, good compiler error, now let's make sure the source file is mentioned..." + Style.RESET_ALL)
+    if not search_filename in stderr:
+        print(Foreground.RED + f"fail: didn't find {search_filename} in stderr" + Foreground.RESET)
         return False
     if not silent:
-        print (fg.CYAN+ style.BRIGHT+
-               "testSyntaxErrorReportUsesPreprocessorLineDirectives: "+
-               "Good, The search file was mentioned, now let's check the type of error..."+ style.RESET_ALL)
-    ok = errorType in stderr
+        print(Foreground.CYAN + Style.BRIGHT +
+              "testSyntaxErrorReportUsesPreprocessorLineDirectives: " +
+              "Good, The search file was mentioned, now let's check the type of error..." + Style.RESET_ALL)
+    ok = error_type in stderr
     if not ok:
-        print(fg.RED + f"fail: err #{errorType} not in stderr" + fg.RESET)
+        print(Foreground.RED + f"fail: err #{error_type} not in stderr" + Foreground.RESET)
     return ok
 
-result = 0  # to define for sub-tests
-resultFailed = 0
-def doTests(compiler, silent, azdxcpath):
+
+result = 0  # to define for subtests
+result_failed = 0
+
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
-    
-    if testSampleFileCompilationEmitsPreprocessorLineDirectives(os.path.join(workDir, "RespectEmitLine/main.azsl.mcpp"),
-                                                                compiler, silent): result += 1
+    work_dir = os.getcwd()
+
+    if test_sample_file_compilation_emits_preprocessor_line_directives(os.path.join(work_dir, "RespectEmitLine/main.azsl.mcpp"),
+                                                                       compiler, silent):
+        result += 1
     else:
-        print(fg.RED + "fail: testSampleFileCompilationEmitsPreprocessorLineDirectives" + fg.RESET)
-        resultFailed += 1
-    
+        print(Foreground.RED + "fail: testSampleFileCompilationEmitsPreprocessorLineDirectives" + Foreground.RESET)
+        result_failed += 1
+
     if not silent: print("\n")
-    if testErrorReportUsesPreprocessorLineDirectives(os.path.join(workDir, "RespectEmitLine/main.azsl.mcpp"),
+    if test_error_report_uses_preprocessor_line_directives(os.path.join(work_dir, "RespectEmitLine/main.azsl.mcpp"),
                                                            compiler, silent,
                                                            "ShaderResourceGroup SRG2 : Slot2", "ShaderResour ceGroup SRG2 : Slot2",
                                                            "level2.azsli",
-                                                           "syntax error"): result += 1
+                                                           "syntax error"):
+        result += 1
     else:
-        print(fg.RED + "fail: testErrorReportUsesPreprocessorLineDirectives" + fg.RESET)
-        resultFailed += 1
-    
+        print(Foreground.RED + "fail: testErrorReportUsesPreprocessorLineDirectives" + Foreground.RESET)
+        result_failed += 1
+
     if not silent: print("\n")
-    if testErrorReportUsesPreprocessorLineDirectives(os.path.join(workDir, "RespectEmitLine/main.azsl.mcpp"),
+    if test_error_report_uses_preprocessor_line_directives(os.path.join(work_dir, "RespectEmitLine/main.azsl.mcpp"),
                                                            compiler, silent,
                                                            "ShaderResourceGroup SRG1 : Slot1", "ShaderResourceGroup SRG1 : SlotX",
                                                            "level1.azsli",
-                                                           "Semantic error"): result += 1
-    else: resultFailed += 1
-    
-    #if testSemanticErrorReportUsesPreprocessorLineDirectives(os.path.join(workDir, "RespectEmitLine/main.azsl.mcpp"),
+                                                           "Semantic error"):
+        result += 1
+    else:
+        result_failed += 1
+
+    # if testSemanticErrorReportUsesPreprocessorLineDirectives(os.path.join(work_dir, "RespectEmitLine/main.azsl.mcpp"),
     #                                                       compiler, silent): result += 1
-    #else: resultFailed += 1
+    # else: result_failed += 1
 
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

@@ -6,59 +6,66 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
-import os
-from clr import *
-sys.path.append("..")
-import testfuncs
 
-def execTest(thefile, compilerPath, silent):
+import os
+
+from Shared import compiler
+from Shared.colors import *
+
+
+def exec_test(thefile, compiler_path, silent):
     '''return number of successes'''
-    symbols, ok = testfuncs.buildAndGetSymbols(thefile, compilerPath, silent)
+    symbols, ok = compiler.build_and_get_symbols(thefile, compiler_path, silent)
     # check the specific stuff we want to verify with this test
     if ok:
         try:
             ok = symbols["Symbol '/A/A'"]['kind'] == 'Class'
-            
-            ok2 = symbols["Symbol '/A/A'"]["references"] == None   # no references for A::A
-            
+
+            ok2 = symbols["Symbol '/A/A'"]["references"] == None  # no references for A::A
+
             ok3 = len(symbols["Symbol '/A'"]["references"]) == 1
 
             ok4 = symbols["Symbol '/A'"]["references"][0]["line"] == 11  # /A has one ref in the baselist of B line 11
 
             if not silent:
                 if not ok:
-                    print (fg.RED+ "Couldn't verify symbol /A/A is a Class"+ style.RESET_ALL)
+                    print(Foreground.RED + "Couldn't verify symbol /A/A is a Class" + Style.RESET_ALL)
 
                 if not ok2:
-                    print (fg.RED+ "Couldn't verify symbol /A/A is ot referenced"+ style.RESET_ALL)
+                    print(Foreground.RED + "Couldn't verify symbol /A/A is ot referenced" + Style.RESET_ALL)
 
                 if not ok3:
-                    print (fg.RED+ "Couldn't verify /A has 1 reference"+ style.RESET_ALL)
+                    print(Foreground.RED + "Couldn't verify /A has 1 reference" + Style.RESET_ALL)
 
                 if not ok4:
-                    print (fg.RED+ "Couldn't verify /A's seenat is at line 11"+ style.RESET_ALL)
+                    print(Foreground.RED + "Couldn't verify /A's seenat is at line 11" + Style.RESET_ALL)
 
             ok = ok and ok2 and ok3 and ok4
 
         except Exception as e:
-            print (fg.RED+ "Err: dumpsym didn't match expectations"+ style.RESET_ALL, e)
+            print(Foreground.RED + "Err: dumpsym didn't match expectations" + Style.RESET_ALL, e)
             ok = False
     return ok
 
-result = 0  # to define for sub-tests
-resultFailed = 0
-def doTests(compiler, silent, azdxcpath):
+
+result = 0  # to define for subtests
+result_failed = 0
+
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    if execTest(os.path.join(workDir, "inheritance-lookup-seenats.azsl"), compiler, silent): result += 1
-    else: resultFailed += 1
+    if exec_test(os.path.join(work_dir, "inheritance-lookup-seenats.azsl"), compiler, silent):
+        result += 1
+    else:
+        result_failed += 1
+
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

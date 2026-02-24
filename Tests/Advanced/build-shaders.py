@@ -7,27 +7,27 @@ For complete copyright and license terms please see the LICENSE at the root of t
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
 
-import sys
 import os
-import re
 
-result = 0  # to define for sub-tests
-resultFailed = 0 # to define for sub-tests
+result = 0  # to define for subtests
+result_failed = 0  # to define for subtests
 
-def doTests(compiler, silent, az3rdParty):
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    azslShaderFileList = ["build-surface.azsl", "simple-surface.azsl", "build-compute.azsl", "../Samples/Enumeration.azsl"]
+    azsl_shader_file_list = ["build-surface.azsl", "simple-surface.azsl", "build-compute.azsl", "../Samples/Enumeration.azsl"]
 
     # Here's one bonus success for you.
     # This script is deprecated - it's being moved to the Platform/ folders and will be deleted after merging
     result += 1
 
+
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

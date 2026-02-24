@@ -6,63 +6,69 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
-import os
-sys.path.append("..")
-sys.path.append("../..")
-from clr import *
-import testfuncs
 
-def verify(thefile, compilerPath, silent):
-    j, ok = testfuncs.buildAndGetJson(thefile, compilerPath, silent, ["--namespace=vk", "--srg", "--max-spaces=2"])
+import os
+
+from Shared import compiler
+from Shared.colors import *
+
+
+def verify(thefile, compiler_path, silent):
+    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--namespace=vk", "--srg", "--max-spaces=2"])
 
     if ok:
         predicates = []
 
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["index"]        == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["space"]        == 0)
+        predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["index"] == 0)
+        predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["space"] == 0)
         predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["index-merged"] == 0)
         predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["space-merged"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["index"]        == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["space"]        == 0)
+        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["index"] == 0)
+        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["space"] == 0)
         predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["index-merged"] == 0)
         predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["space-merged"] == 0)
 
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["index"]        == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["space"]        == 1)
+        predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["index"] == 0)
+        predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["space"] == 1)
         predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["index-merged"] == 0)
         predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["space-merged"] == 1)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["index"]        == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["space"]        == 1)
+        predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["index"] == 0)
+        predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["space"] == 1)
         predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["index-merged"] == 0)
         predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["space-merged"] == 1)
 
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["index"]        == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["space"]        == 2)
+        predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["index"] == 0)
+        predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["space"] == 2)
         predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["index-merged"] == 1)
         predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["space-merged"] == 1)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["index"]        == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["space"]        == 2)
+        predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["index"] == 0)
+        predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["space"] == 2)
         predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["index-merged"] == 1)
         predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["space-merged"] == 1)
 
-        if not silent: print (fg.CYAN+ style.BRIGHT+ "reflected binding info verification..."+ style.RESET_ALL)
-        ok = testfuncs.verifyAllPredicates(predicates, j)
+        if not silent: print(Foreground.CYAN + Style.BRIGHT + "reflected binding info verification..." + Style.RESET_ALL)
+        ok = compiler.verify_all_predicates(predicates, j)
     return True if ok else False
 
-result = 0  # to define for sub-tests
-resultFailed = 0
-def doTests(compiler, silent, azdxcpath):
+
+result = 0  # to define for subtests
+result_failed = 0
+
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    if verify(os.path.join(workDir, "srg-layout-merged.azsl"), compiler, silent) : result += 1
-    else: resultFailed += 1
+    if verify(os.path.join(work_dir, "srg-layout-merged.azsl"), compiler, silent):
+        result += 1
+    else:
+        result_failed += 1
+
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

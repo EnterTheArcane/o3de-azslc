@@ -6,44 +6,46 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
+
 import os
-sys.path.append("..")
-from clr import *
-import testfuncs
-import testhelper
+
+from Shared import compiler
+from Shared import emission
+from Shared.colors import *
 
 '''
 Validates having multiple attribute namespaces in the same file.
 '''
 
+result = 0  # to define for subtests
+result_failed = 0
 
-result = 0  # to define for sub-tests
-resultFailed = 0
 
-def doTests(compiler, silent, azdxcpath):
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    if testhelper.verifyEmissionPattern("multiple-attribute-namespaces.azsl", "multiple-attribute-namespaces.txt", compiler, silent, ["--namespace=mt", "--namespace=vk"]):
+    if emission.verify_emission_pattern("multiple-attribute-namespaces.azsl", "multiple-attribute-namespaces.txt", compiler, silent,
+                                        ["--namespace=mt", "--namespace=vk"]):
         result += 1
     else:
-        resultFailed += 1
+        result_failed += 1
 
-    if testhelper.compileAndExpectError("multiple-attribute-namespaces.azsl", compiler, silent, ["--namespace=mt,vk"]):
+    if emission.compile_and_expect_error("multiple-attribute-namespaces.azsl", compiler, silent, ["--namespace=mt,vk"]):
         result += 1
     else:
-        resultFailed += 1
-        
-    if testhelper.compileAndExpectError("multiple-attribute-namespaces.azsl", compiler, silent, ["--namespace=mt&vk"]):
+        result_failed += 1
+
+    if emission.compile_and_expect_error("multiple-attribute-namespaces.azsl", compiler, silent, ["--namespace=mt&vk"]):
         result += 1
     else:
-        resultFailed += 1
+        result_failed += 1
+
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"

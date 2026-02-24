@@ -6,67 +6,57 @@ For complete copyright and license terms please see the LICENSE at the root of t
 
 SPDX-License-Identifier: Apache-2.0 OR MIT
 """
-import sys
+
 import os
-sys.path.append("..")
-sys.path.append("../..")
-from clr import *
-import testfuncs
+
+from Shared import compiler
+from Shared.colors import *
 
 
-def verifyInputLayouts(thefile, compilerPath, silent):
-    j, ok = testfuncs.buildAndGetJson(thefile, compilerPath, silent, ["--ia"])
+def verify_input_layouts(thefile, compiler_path, silent):
+    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--ia"])
+
     if ok:
-        predicates = []
-        # check all references of func()
-        predicates.append(lambda: len(j["inputLayouts"]) == 5)
+        predicates = [
+            # check all references of func()
+            lambda: len(j["inputLayouts"]) == 5, lambda: j["inputLayouts"][0]["entry"] == "MainCS1",
+            lambda: len(j["inputLayouts"][0]["numthreads"]) == 3, lambda: j["inputLayouts"][0]["numthreads"][0] == 1,
+            lambda: j["inputLayouts"][0]["numthreads"][1] == 1, lambda: j["inputLayouts"][0]["numthreads"][2] == 1,
+            lambda: j["inputLayouts"][1]["entry"] == "MainCS2", lambda: len(j["inputLayouts"][1]["numthreads"]) == 3,
+            lambda: j["inputLayouts"][1]["numthreads"][0] == 8, lambda: j["inputLayouts"][1]["numthreads"][1] == 1,
+            lambda: j["inputLayouts"][1]["numthreads"][2] == 1, lambda: j["inputLayouts"][2]["entry"] == "MainCS3",
+            lambda: len(j["inputLayouts"][2]["numthreads"]) == 3, lambda: j["inputLayouts"][2]["numthreads"][0] == 16,
+            lambda: j["inputLayouts"][2]["numthreads"][1] == 4, lambda: j["inputLayouts"][2]["numthreads"][2] == 1,
+            lambda: j["inputLayouts"][3]["entry"] == "MainCS4", lambda: len(j["inputLayouts"][3]["numthreads"]) == 3,
+            lambda: j["inputLayouts"][3]["numthreads"][0] == 1, lambda: j["inputLayouts"][3]["numthreads"][1] == 1,
+            lambda: j["inputLayouts"][3]["numthreads"][2] == 64, lambda: j["inputLayouts"][4]["entry"] == "MainVS1",
+            lambda: "numthreads" not in j["inputLayouts"][4].keys(),
+        ]
 
-        predicates.append(lambda: j["inputLayouts"][0]["entry"] == "MainCS1")
-        predicates.append(lambda: len(j["inputLayouts"][0]["numthreads"]) == 3)
-        predicates.append(lambda: j["inputLayouts"][0]["numthreads"][0] == 1)
-        predicates.append(lambda: j["inputLayouts"][0]["numthreads"][1] == 1)
-        predicates.append(lambda: j["inputLayouts"][0]["numthreads"][2] == 1)
+        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler layouts verification..." + Style.RESET_ALL)
+        ok = compiler.verify_all_predicates(predicates, j)
 
-        predicates.append(lambda: j["inputLayouts"][1]["entry"] == "MainCS2")
-        predicates.append(lambda: len(j["inputLayouts"][1]["numthreads"]) == 3)
-        predicates.append(lambda: j["inputLayouts"][1]["numthreads"][0] == 8)
-        predicates.append(lambda: j["inputLayouts"][1]["numthreads"][1] == 1)
-        predicates.append(lambda: j["inputLayouts"][1]["numthreads"][2] == 1)
-
-        predicates.append(lambda: j["inputLayouts"][2]["entry"] == "MainCS3")
-        predicates.append(lambda: len(j["inputLayouts"][2]["numthreads"]) == 3)
-        predicates.append(lambda: j["inputLayouts"][2]["numthreads"][0] == 16)
-        predicates.append(lambda: j["inputLayouts"][2]["numthreads"][1] == 4)
-        predicates.append(lambda: j["inputLayouts"][2]["numthreads"][2] == 1)
-
-        predicates.append(lambda: j["inputLayouts"][3]["entry"] == "MainCS4")
-        predicates.append(lambda: len(j["inputLayouts"][3]["numthreads"]) == 3)
-        predicates.append(lambda: j["inputLayouts"][3]["numthreads"][0] == 1)
-        predicates.append(lambda: j["inputLayouts"][3]["numthreads"][1] == 1)
-        predicates.append(lambda: j["inputLayouts"][3]["numthreads"][2] == 64)
-
-        predicates.append(lambda: j["inputLayouts"][4]["entry"] == "MainVS1")
-        predicates.append(lambda: "numthreads" not in j["inputLayouts"][4].keys())
-
-        if not silent: print (fg.CYAN+ style.BRIGHT+ "input assembler layouts verification..."+ style.RESET_ALL)
-        ok = testfuncs.verifyAllPredicates(predicates, j)
     return ok
 
-result = 0  # to define for sub-tests
-resultFailed = 0
 
-def doTests(compiler, silent, azdxcpath):
+result = 0  # to define for subtests
+result_failed = 0
+
+
+def do_tests(compiler, silent):
     global result
-    global resultFailed
+    global result_failed
 
     # Working directory should have been set to this script's directory by the calling parent
-    # You can get it once doTests() is called, but not during initialization of the module,
+    # You can get it once do_tests() is called, but not during initialization of the module,
     #  because at that time it will still be set to the working directory of the calling script
-    workDir = os.getcwd()
+    work_dir = os.getcwd()
 
-    if verifyInputLayouts(os.path.join(workDir, "compute-entries.azsl"), compiler, silent): result += 1
-    else: resultFailed += 1
+    if verify_input_layouts(os.path.join(work_dir, "compute-entries.azsl"), compiler, silent):
+        result += 1
+    else:
+        result_failed += 1
 
 
 if __name__ == "__main__":
-    print ("please call from testapp.py")
+    assert "please call from runner.py"
