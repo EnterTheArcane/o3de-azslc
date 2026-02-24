@@ -48,7 +48,8 @@ jobs:
       platform: ${{ matrix.platform }}
       architecture: ${{ matrix.architecture }}
       test: true
-      sign: true
+      sign: false
+      upload: true
     secrets:
       APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
       APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
