@@ -9,13 +9,12 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared import emission
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
-'''
+"""
 Validates having multiple attribute namespaces in the same file.
-'''
+"""
 
 result = 0  # to define for subtests
 result_failed = 0
@@ -30,18 +29,18 @@ def do_tests(compiler, silent):
     #  because at that time it will still be set to the working directory of the calling script
     work_dir = os.getcwd()
 
-    if emission.verify_emission_pattern("multiple-attribute-namespaces.azsl", "multiple-attribute-namespaces.txt", compiler, silent,
+    if common.verify_emission_pattern("multiple-attribute-namespaces.azsl", "multiple-attribute-namespaces.txt", compiler, silent,
                                         ["--namespace=mt", "--namespace=vk"]):
         result += 1
     else:
         result_failed += 1
 
-    if emission.compile_and_expect_error("multiple-attribute-namespaces.azsl", compiler, silent, ["--namespace=mt,vk"]):
+    if common.compile_and_expect_error("multiple-attribute-namespaces.azsl", compiler, silent, ["--namespace=mt,vk"]):
         result += 1
     else:
         result_failed += 1
 
-    if emission.compile_and_expect_error("multiple-attribute-namespaces.azsl", compiler, silent, ["--namespace=mt&vk"]):
+    if common.compile_and_expect_error("multiple-attribute-namespaces.azsl", compiler, silent, ["--namespace=mt&vk"]):
         result += 1
     else:
         result_failed += 1

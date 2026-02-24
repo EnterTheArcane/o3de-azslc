@@ -9,12 +9,12 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify_options_emission(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--options"])
+def verify_options_emission(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--options"])
 
     if ok:
         predicates = []
@@ -80,13 +80,13 @@ def verify_options_emission(thefile, compiler_path, silent):
         predicates.append(lambda: j["ShaderOptions"][15]["values"][0] == "1")
         predicates.append(lambda: j["ShaderOptions"][15]["values"][1] == "64")
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler layouts verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}input assembler layouts verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return True if ok else False
 
 
-def verify_options_emission_integer_ranges(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--options"])
+def verify_options_emission_integer_ranges(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--options"])
 
     if ok:
         predicates = []
@@ -117,13 +117,13 @@ def verify_options_emission_integer_ranges(thefile, compiler_path, silent):
         predicates.append(lambda: j["ShaderOptions"][2]["values"][0] == "5")
         predicates.append(lambda: j["ShaderOptions"][2]["values"][1] == "9")
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler layouts verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}input assembler layouts verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return True if ok else False
 
 
-def verify_fail(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--options"])
+def verify_fail(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--options"])
     return True if not ok else False
 
 

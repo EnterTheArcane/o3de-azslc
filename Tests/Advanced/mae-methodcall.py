@@ -9,12 +9,12 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify_option_costs(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--options"])
+def verify_option_costs(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--options"])
     if ok:
         predicates = [
             # check all references of func()
@@ -22,8 +22,8 @@ def verify_option_costs(thefile, compiler_path, silent):
             lambda: j["ShaderOptions"][0]["costImpact"] == 54,
         ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "option expected cost check..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}option expected cost check...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return ok
 
 

@@ -9,30 +9,30 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
 def check_symbol(table, sym, field, value):
     if not table[sym]['type']['core'][field] == value:
-        print(Foreground.RED + sym + " must be of type " + value + Style.RESET_ALL)
+        print(f"{Foreground.RED}{sym} must be of type {value}{Style.RESET_ALL}")
         return False
     return True
 
 
-def exec_test(thefile, compiler_path, silent):
-    '''return number of successes'''
-    symbols, ok = compiler.build_and_get_symbols(thefile, compiler_path, silent)
+def exec_test(file, compiler_path, silent):
+    """return number of successes"""
+    symbols, ok = common.build_and_get_symbols(file, compiler_path, silent)
     if not ok:
-        print(Foreground.RED + "Couldn't get meaningful symbols table" + Style.RESET_ALL)
+        print(f"{Foreground.RED}Couldn't get meaningful symbols table{Style.RESET_ALL}")
         return 0
 
     if not symbols["Symbol '/Monday'"]['type']['core']['name'] == '/Weekday':
         ok = False
-        print(Foreground.RED + "Symbol /Monday must be of type '/Weekday'" + Style.RESET_ALL)
+        print(f"{Foreground.RED}Symbol /Monday must be of type '/Weekday'{Style.RESET_ALL}")
     if not symbols["Symbol '/Monday'"]['type']['core']['underlying_scalar'] == '<NA>':
         ok = False
-        print(Foreground.RED + "Symbol /Monday must have underlying_scalar of type '<NA>'" + Style.RESET_ALL)
+        print(f"{Foreground.RED}Symbol /Monday must have underlying_scalar of type '<NA>'{Style.RESET_ALL}")
 
     ok = ok and check_symbol(symbols, "Symbol '/Monday'", 'name', '/Weekday')
     ok = ok and check_symbol(symbols, "Symbol '/Monday'", 'underlying_scalar', '<NA>')

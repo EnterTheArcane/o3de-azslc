@@ -9,13 +9,13 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def test(thefile, compiler_path, silent):
-    '''return number of successes'''
-    symbols, ok = compiler.build_and_get_symbols(thefile, compiler_path, silent)
+def test(file, compiler_path, silent):
+    """return number of successes"""
+    symbols, ok = common.build_and_get_symbols(file, compiler_path, silent)
     if ok:
         try:
             ok = symbols["Symbol '/g_s'"]['kind'] == 'Variable'
@@ -23,11 +23,11 @@ def test(thefile, compiler_path, silent):
 
             if not silent:
                 if not ok:
-                    print(Foreground.RED + "ERR: g_s type could not be validated" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}ERR: g_s type could not be validated{Style.RESET_ALL}")
                 else:
-                    print(Style.BRIGHT + "OK! " + Style.RESET_ALL)
+                    print(f"{Style.BRIGHT}OK! {Style.RESET_ALL}")
         except Exception as e:
-            print(Foreground.RED + "Err: Parsed --dumpsym may lack some expected keys" + Style.RESET_ALL, e)
+            print(f"{Foreground.RED}Err: Parsed --dumpsym may lack some expected keys{Style.RESET_ALL}", e)
     return ok
 
 

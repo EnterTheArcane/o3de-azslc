@@ -9,13 +9,13 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def exec_test(thefile, compiler_path, silent):
-    '''return number of successes'''
-    symbols, ok = compiler.build_and_get_symbols(thefile, compiler_path, silent)
+def exec_test(file, compiler_path, silent):
+    """return number of successes"""
+    symbols, ok = common.build_and_get_symbols(file, compiler_path, silent)
     # check the specific stuff we want to verify with this test
     if ok:
         try:
@@ -29,21 +29,21 @@ def exec_test(thefile, compiler_path, silent):
 
             if not silent:
                 if not ok:
-                    print(Foreground.RED + "Couldn't verify symbol /A/A is a Class" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify symbol /A/A is a Class{Style.RESET_ALL}")
 
                 if not ok2:
-                    print(Foreground.RED + "Couldn't verify symbol /A/A is ot referenced" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify symbol /A/A is ot referenced{Style.RESET_ALL}")
 
                 if not ok3:
-                    print(Foreground.RED + "Couldn't verify /A has 1 reference" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify /A has 1 reference{Style.RESET_ALL}")
 
                 if not ok4:
-                    print(Foreground.RED + "Couldn't verify /A's seenat is at line 11" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify /A's seenat is at line 11{Style.RESET_ALL}")
 
             ok = ok and ok2 and ok3 and ok4
 
         except Exception as e:
-            print(Foreground.RED + "Err: dumpsym didn't match expectations" + Style.RESET_ALL, e)
+            print(f"{Foreground.RED}Err: dumpsym didn't match expectations{Style.RESET_ALL}", e)
             ok = False
     return ok
 

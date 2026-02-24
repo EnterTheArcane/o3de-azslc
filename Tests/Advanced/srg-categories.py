@@ -9,22 +9,23 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify_srg_categories(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--srg"])
+def verify_srg_categories(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--srg"])
 
     if ok:
-        predicates = []
+        predicates = [
 
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["id"] == "scene")
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForBufferViews"][1]["id"] == "buf")
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForImageViews"][0]["id"] == "tex")
+            lambda: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["id"] == "scene",
+            lambda: j["ShaderResourceGroups"][0]["inputsForBufferViews"][1]["id"] == "buf",
+            lambda: j["ShaderResourceGroups"][0]["inputsForImageViews"][0]["id"] == "tex",
+        ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler semantics verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}input assembler semantics verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return True if ok else False
 
 

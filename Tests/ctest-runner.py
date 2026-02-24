@@ -32,13 +32,13 @@ import os
 import sys
 
 # Make the Tests/ directory importable so that the Shared package
-# (compiler, emission, colors, etc.) can be found regardless of the
+# (common module) can be found regardless of the
 # working directory CTest happens to use.
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 if TESTS_DIR not in sys.path:
     sys.path.insert(0, TESTS_DIR)
 
-from Shared import compiler
+import common
 
 EXIT_PASS = 0
 EXIT_FAIL = 1
@@ -51,8 +51,8 @@ def handle_simple(args):
     if args.compiler_flag:
         options.append(args.compiler_flag)
 
-    out, err, code = compiler.launch_compiler(args.compiler, options, silent=True)
-    okpreds, numpreds = compiler.execute_predicate_checks(out)
+    out, err, code = common.launch_compiler(args.compiler, options, silent=True)
+    okpreds, numpreds = common.execute_predicate_checks(out)
     fine = (code == 0) and okpreds
 
     if args.expect_fail:
@@ -60,7 +60,7 @@ def handle_simple(args):
             # Semantic error tests must still have valid *syntax*.
             if args.compiler_flag == "--semantic":
                 syn_opts = [args.file, "--syntax"]
-                _, _, syn_code = compiler.launch_compiler(
+                _, _, syn_code = common.launch_compiler(
                     args.compiler, syn_opts, silent=True
                 )
                 if syn_code != 0:
@@ -73,14 +73,14 @@ def handle_simple(args):
             # Verify error code if #EC annotation is present in the source.
             with io.open(args.file, "r", encoding="latin-1") as f:
                 azsl_code = f.read()
-            expected_ec = compiler.find_token_to_int(azsl_code, r"#EC\s\d*")
+            expected_ec = common.find_token_to_int(azsl_code, r"#EC\s\d*")
             if expected_ec == -2:
                 print(
                     f"FAIL: #EC annotation is not a valid integer: {args.file}"
                 )
                 return EXIT_FAIL
             if expected_ec not in (-1,):
-                actual_ec = compiler.find_token_to_int(
+                actual_ec = common.find_token_to_int(
                     err.decode("utf-8"), r"error\s#\d*:"
                 )
                 if actual_ec != expected_ec:
@@ -112,33 +112,29 @@ def handle_simple(args):
 # Emission Mode
 def handle_emission(args):
     """Compile and verify the emitted code against .txt pattern files."""
-    from Shared import emission
-
-    emission.fail_list = []
-    result = emission.verify_emission_patterns(
+    common.fail_list = []
+    result = common.verify_emission_patterns(
         args.file, args.compiler, silent=True, arg_list=[]
     )
     if result > 0:
         print(f"PASS: {args.file} ({result} pattern file(s) verified)")
         return EXIT_PASS
     print(f"FAIL: Emission pattern verification failed: {args.file}")
-    emission.print_failed_test_list(False)
+    common.print_failed_test_list(False)
     return EXIT_FAIL
 
 
 def handle_emission_error(args):
     """Compile expecting failure and verify the error code."""
-    from Shared import emission
-
-    emission.fail_list = []
-    result = emission.compile_and_expect_error(
+    common.fail_list = []
+    result = common.compile_and_expect_error(
         args.file, args.compiler, silent=True, arg_list=[]
     )
     if result > 0:
         print(f"PASS: {args.file} (failed with expected error code)")
         return EXIT_PASS
     print(f"FAIL: Emission error test: {args.file}")
-    emission.print_failed_test_list(False)
+    common.print_failed_test_list(False)
     return EXIT_FAIL
 
 

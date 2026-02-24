@@ -10,8 +10,8 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 import os
 import os.path
 
-from Shared import emission
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 result = 0  # to define for subtests
 result_failed = 0
@@ -32,16 +32,16 @@ def do_tests(compiler, silent):
                 subdir_name = os.path.basename(base)
                 complete_path = os.path.join(base, f)
                 if subdir_name != "AsError":
-                    success = emission.verify_emission_patterns(complete_path, compiler, silent, []) > 0
+                    success = common.verify_emission_patterns(complete_path, compiler, silent, []) > 0
                 else:
-                    success = emission.compile_and_expect_error(complete_path, compiler, silent, []) > 0
+                    success = common.compile_and_expect_error(complete_path, compiler, silent, []) > 0
                 if success:
                     result += 1
                 else:
                     result_failed += 1
-                    if not silent: print(Foreground.RED + Style.BRIGHT + "failed " + Style.NORMAL + f + Foreground.RESET)
+                    if not silent: print(f"{Foreground.RED}{Style.BRIGHT}failed {Style.NORMAL}{f}{Foreground.RESET}")
 
-    emission.print_failed_test_list(silent)
+    common.print_failed_test_list(silent)
 
 
 if __name__ == "__main__":

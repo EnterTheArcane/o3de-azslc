@@ -109,7 +109,7 @@ ctest --test-dir Build --output-on-failure
 
 | Category | Description |
 |---|---|---|
-| **Advanced** | Complex Python-driven test scripts (DXC integration, etc.) |
+| **Advanced** | Complex Python-driven test scripts |
 | **Emission** | Compiles and verifies emitted output against expected patterns |
 | **Samples** | Full compilation of sample shaders |
 | **Semantic** | Validates semantic analysis |

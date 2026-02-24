@@ -10,8 +10,8 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 import os
 import os.path
 
-from Shared import emission
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 result = 0  # to define for subtests
 result_failed = 0
@@ -37,21 +37,21 @@ def do_tests(compiler, silent):
 
     fail_list = []
     pattern_file = os.path.abspath(os.path.join(work_dir, "./texture2DMS-to-texture2D.txt"))
-    if emission.verify_emission_pattern(azsl_file, pattern_file, compiler, silent, []):
+    if common.verify_emission_pattern(azsl_file, pattern_file, compiler, silent, []):
         result += 1
     else:
         fail_list.append(pattern_file)
         result_failed += 1
 
     pattern_file = os.path.abspath(os.path.join(work_dir, "./texture2DMS-to-texture2D-noms.txt"))
-    if emission.verify_emission_pattern(azsl_file, pattern_file, compiler, silent, ["--no-ms"]):
+    if common.verify_emission_pattern(azsl_file, pattern_file, compiler, silent, ["--no-ms"]):
         result += 1
     else:
         fail_list.append(pattern_file)
         result_failed += 1
 
     if not silent and len(fail_list) > 0:
-        print(Style.BRIGHT + Foreground.RED + "failed files: " + Foreground.WHITE + str(fail_list) + Style.RESET_ALL)
+        print(f"{Style.BRIGHT}{Foreground.RED}failed files: {Foreground.WHITE}{fail_list}{Style.RESET_ALL}")
 
 
 if __name__ == "__main__":

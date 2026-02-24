@@ -9,36 +9,38 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify_ia_semantics(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--ia"])
+def verify_ia_semantics(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--ia"])
 
     if ok:
-        predicates = []
+        predicates = [
 
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][0]["systemValue"] == 0)
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][1]["systemValue"] == 0)
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][0]["systemValue"] == 1)  # SV_POSITION
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][1]["systemValue"] == 0)
+            lambda: j["inputLayouts"][0]["streams"][0]["systemValue"] == 0,
+            lambda: j["inputLayouts"][0]["streams"][1]["systemValue"] == 0,
+            lambda: j["inputLayouts"][1]["streams"][0]["systemValue"] == 1,  # SV_POSITION
+            lambda: j["inputLayouts"][1]["streams"][1]["systemValue"] == 0,
+        ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler semantics verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}input assembler semantics verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return True if ok else False
 
 
-def verify_om_semantics(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--om"])
+def verify_om_semantics(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--om"])
 
     if ok:
-        predicates = []
+        predicates = [
 
-        predicates.append(lambda: j["outputLayouts"][0]["renderTargets"][0]["systemValue"] == 1)  # SV_TARGET
+            lambda: j["outputLayouts"][0]["renderTargets"][0]["systemValue"] == 1,  # SV_TARGET
+        ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler semantics verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}input assembler semantics verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return True if ok else False
 
 

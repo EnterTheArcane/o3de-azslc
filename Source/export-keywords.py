@@ -28,9 +28,9 @@ if __name__ == "__main__":
         exit(1)
 
     sys.path.append("../tests")
-    test_funcs = importlib.import_module("testfuncs")
+    compiler = importlib.import_module("common")
 
-    keywords = test_funcs.dump_keywords(exe)
+    keywords = compiler.dump_keywords(exe)
     if not keywords[1]:
         sys.exit(1)
 

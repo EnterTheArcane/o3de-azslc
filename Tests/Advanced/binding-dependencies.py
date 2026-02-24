@@ -9,12 +9,12 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify_binding_dependencies_1(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--bindingdep"])
+def verify_binding_dependencies_1(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--bindingdep"])
 
     if ok:
         predicates = [
@@ -33,13 +33,13 @@ def verify_binding_dependencies_1(thefile, compiler_path, silent):
             lambda: "over" not in j["Srg1"]["m_materialConstants"]["dependentFunctions"],
         ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "binding dependency analysis verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}binding dependency analysis verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return True if ok else False
 
 
-def verify_binding_dependencies_2(thefile, compiler_path, silent):
-    symbols, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--bindingdep"])
+def verify_binding_dependencies_2(file, compiler_path, silent):
+    symbols, ok = common.build_and_get_json(file, compiler_path, silent, ["--bindingdep"])
 
     if ok:
         predicates = [
@@ -48,16 +48,16 @@ def verify_binding_dependencies_2(thefile, compiler_path, silent):
             lambda: "StandardPbr_ForwardPassPS" in symbols["MaterialSrg"]["MaterialSrg_SRGConstantBuffer"]["dependentFunctions"],
         ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "complex input program binding dep verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, symbols)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}complex input program binding dep verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, symbols)
         if ok and not silent:
-            print(Style.BRIGHT + "OK! " + str(len(predicates)) + " verified." + Style.RESET_ALL)
+            print(f"{Style.BRIGHT}OK! {len(predicates)} verified.{Style.RESET_ALL}")
 
     return 1 if ok else 0
 
 
-def verify_binding_dependencies_3(thefile, compiler_path, silent):
-    symbols, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--bindingdep"])
+def verify_binding_dependencies_3(file, compiler_path, silent):
+    symbols, ok = common.build_and_get_json(file, compiler_path, silent, ["--bindingdep"])
 
     if ok:
         predicates = [
@@ -71,16 +71,16 @@ def verify_binding_dependencies_3(thefile, compiler_path, silent):
             lambda: "m_SHADER_VARIANT_KEY_NAME_" in symbols["TrianglePerInstanceSRG"]["TrianglePerInstanceSRG_SRGConstantBuffer"]["participantConstants"],
         ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "Program with variant fallback binding dep verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, symbols)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}Program with variant fallback binding dep verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, symbols)
         if ok and not silent:
-            print(Style.BRIGHT + "OK! " + str(len(predicates)) + " verified." + Style.RESET_ALL)
+            print(f"{Style.BRIGHT}OK! {len(predicates)} verified.{Style.RESET_ALL}")
 
     return 1 if ok else 0
 
 
-def verify_binding_dependencies_4(thefile, compiler_path, silent):
-    symbols, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--bindingdep"])
+def verify_binding_dependencies_4(file, compiler_path, silent):
+    symbols, ok = common.build_and_get_json(file, compiler_path, silent, ["--bindingdep"])
 
     if ok:
         predicates = [
@@ -90,10 +90,10 @@ def verify_binding_dependencies_4(thefile, compiler_path, silent):
             lambda: "MainCS" in symbols["PassSrg"]["m_lutTexture"]["dependentFunctions"],
         ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "Program with unnamed scopes binding dep verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, symbols)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}Program with unnamed scopes binding dep verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, symbols)
         if ok and not silent:
-            print(Style.BRIGHT + "OK! " + str(len(predicates)) + " verified." + Style.RESET_ALL)
+            print(f"{Style.BRIGHT}OK! {len(predicates)} verified.{Style.RESET_ALL}")
 
     return 1 if ok else 0
 

@@ -9,50 +9,51 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify_input_layouts(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--ia"])
+def verify_input_layouts(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--ia"])
     if ok:
-        predicates = []
-        # check all references of func()
-        predicates.append(lambda: len(j["inputLayouts"]) == 3)
+        predicates = [
+            # check all references of func()
+            lambda: len(j["inputLayouts"]) == 3,
 
-        predicates.append(lambda: len(j["inputLayouts"][0]["streams"]) == 3)
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][0]["name"] == "m_position")
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][0]["semanticName"] == "POSITION")
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][0]["systemValue"] == False)
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][1]["name"] == "m_color")
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][1]["dimensions"][0] == 4)
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][1]["semanticName"] == "COLOR")
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][1]["systemValue"] == False)
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][2]["name"] == "vtxIndex")
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][2]["semanticName"] == "SV_VertexID")
-        predicates.append(lambda: j["inputLayouts"][0]["streams"][2]["systemValue"] == True)
+            lambda: len(j["inputLayouts"][0]["streams"]) == 3,
+            lambda: j["inputLayouts"][0]["streams"][0]["name"] == "m_position",
+            lambda: j["inputLayouts"][0]["streams"][0]["semanticName"] == "POSITION",
+            lambda: j["inputLayouts"][0]["streams"][0]["systemValue"] == False,
+            lambda: j["inputLayouts"][0]["streams"][1]["name"] == "m_color",
+            lambda: j["inputLayouts"][0]["streams"][1]["dimensions"][0] == 4,
+            lambda: j["inputLayouts"][0]["streams"][1]["semanticName"] == "COLOR",
+            lambda: j["inputLayouts"][0]["streams"][1]["systemValue"] == False,
+            lambda: j["inputLayouts"][0]["streams"][2]["name"] == "vtxIndex",
+            lambda: j["inputLayouts"][0]["streams"][2]["semanticName"] == "SV_VertexID",
+            lambda: j["inputLayouts"][0]["streams"][2]["systemValue"] == True,
 
-        predicates.append(lambda: len(j["inputLayouts"][1]["streams"]) == 10)
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][0]["name"] == "m_position")
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][0]["semanticName"] == "POSITION")
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][0]["systemValue"] == False)
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][9]["name"] == "instId")
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][9]["semanticName"] == "SV_InstanceID")
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][9]["systemValue"] == True)
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][8]["name"] == "vtxIndex")
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][8]["semanticName"] == "SV_VertexID")
-        predicates.append(lambda: j["inputLayouts"][1]["streams"][8]["systemValue"] == True)
+            lambda: len(j["inputLayouts"][1]["streams"]) == 10,
+            lambda: j["inputLayouts"][1]["streams"][0]["name"] == "m_position",
+            lambda: j["inputLayouts"][1]["streams"][0]["semanticName"] == "POSITION",
+            lambda: j["inputLayouts"][1]["streams"][0]["systemValue"] == False,
+            lambda: j["inputLayouts"][1]["streams"][9]["name"] == "instId",
+            lambda: j["inputLayouts"][1]["streams"][9]["semanticName"] == "SV_InstanceID",
+            lambda: j["inputLayouts"][1]["streams"][9]["systemValue"] == True,
+            lambda: j["inputLayouts"][1]["streams"][8]["name"] == "vtxIndex",
+            lambda: j["inputLayouts"][1]["streams"][8]["semanticName"] == "SV_VertexID",
+            lambda: j["inputLayouts"][1]["streams"][8]["systemValue"] == True,
 
-        predicates.append(lambda: len(j["inputLayouts"][2]["streams"]) == 2)
-        predicates.append(lambda: j["inputLayouts"][2]["streams"][0]["name"] == "position")
-        predicates.append(lambda: j["inputLayouts"][2]["streams"][0]["semanticName"] == "POSITION")
-        predicates.append(lambda: j["inputLayouts"][2]["streams"][0]["systemValue"] == False)
-        predicates.append(lambda: j["inputLayouts"][2]["streams"][1]["name"] == "color")
-        predicates.append(lambda: j["inputLayouts"][2]["streams"][1]["semanticName"] == "COLOR")
-        predicates.append(lambda: j["inputLayouts"][2]["streams"][1]["systemValue"] == False)
+            lambda: len(j["inputLayouts"][2]["streams"]) == 2,
+            lambda: j["inputLayouts"][2]["streams"][0]["name"] == "position",
+            lambda: j["inputLayouts"][2]["streams"][0]["semanticName"] == "POSITION",
+            lambda: j["inputLayouts"][2]["streams"][0]["systemValue"] == False,
+            lambda: j["inputLayouts"][2]["streams"][1]["name"] == "color",
+            lambda: j["inputLayouts"][2]["streams"][1]["semanticName"] == "COLOR",
+            lambda: j["inputLayouts"][2]["streams"][1]["systemValue"] == False,
+        ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler layouts verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}input assembler layouts verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return ok
 
 

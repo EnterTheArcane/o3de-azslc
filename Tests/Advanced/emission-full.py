@@ -9,7 +9,7 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
+import common
 
 result = 0  # to define for subtests
 result_failed = 0  # to define for subtests
@@ -36,7 +36,7 @@ def do_tests(compiler_path, silent):
 
     clean_artifacts()
 
-    if compiler.build_and_get("simple-surface.azsl", compiler_path, silent, ["-o", "simple-surface.hlsl", "--full"]):
+    if common.build_and_get("simple-surface.azsl", compiler_path, silent, ["-o", "simple-surface.hlsl", "--full"]):
         result += 1
     else:
         result_failed += 1

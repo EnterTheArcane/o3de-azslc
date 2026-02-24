@@ -9,13 +9,13 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def exec_test(thefile, compiler_path, silent):
-    '''return number of successes'''
-    symbols, ok = compiler.build_and_get_symbols(thefile, compiler_path, silent)
+def exec_test(file, compiler_path, silent):
+    """return number of successes"""
+    symbols, ok = common.build_and_get_symbols(file, compiler_path, silent)
     # check the specific stuff we want to verify with this test
     if ok:
         try:
@@ -40,34 +40,34 @@ def exec_test(thefile, compiler_path, silent):
 
             if not silent:
                 if not ok:
-                    print(Foreground.RED + "Couldn't verify symbol /C/D is type of /func()/d" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify symbol /C/D is type of /func()/d{Style.RESET_ALL}")
                 else:
-                    print(Style.BRIGHT + "/C/D is type of /func()/d. great !" + Style.RESET_ALL)
+                    print(f"{Style.BRIGHT}/C/D is type of /func()/d. great !{Style.RESET_ALL}")
                 if not ok2:
-                    print(Foreground.RED + "Couldn't verify symbol /C/D is type of /func()/d2" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify symbol /C/D is type of /func()/d2{Style.RESET_ALL}")
                 else:
-                    print(Style.BRIGHT + "/C/D is type of /func()/d2. great !" + Style.RESET_ALL)
+                    print(f"{Style.BRIGHT}/C/D is type of /func()/d2. great !{Style.RESET_ALL}")
                 if not ok3:
-                    print(Foreground.RED + "Couldn't verify symbol /func()/d3 is of type /func()/S" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify symbol /func()/d3 is of type /func()/S{Style.RESET_ALL}")
                 else:
-                    print(Style.BRIGHT + "/func()/d3 is of type /func()/S. great !" + Style.RESET_ALL)
+                    print(f"{Style.BRIGHT}/func()/d3 is of type /func()/S. great !{Style.RESET_ALL}")
 
-                print(Style.BRIGHT + Foreground.YELLOW + "WIP: need to verify {0} is canonicalized to half3x4 ?".format(mh34_type) + Style.RESET_ALL)
+                print(f"{Style.BRIGHT}{Foreground.YELLOW}WIP: need to verify {mh34_type} is canonicalized to half3x4 ?{Style.RESET_ALL}")
 
                 if not ok5:
-                    print(Foreground.RED + "Couldn't verify symbol /func()/rwbf is of type ?RWBuffer<?float4x4>" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify symbol /func()/rwbf is of type ?RWBuffer<?float4x4>{Style.RESET_ALL}")
                 else:
-                    print(Style.BRIGHT + "/func()/rwbf is of type ?RWBuffer<?float4x4>. great !" + Style.RESET_ALL)
+                    print(f"{Style.BRIGHT}/func()/rwbf is of type ?RWBuffer<?float4x4>. great !{Style.RESET_ALL}")
 
                 if not ok6:
-                    print(Foreground.RED + "Couldn't verify symbol /func()/sbInl is of type ?StructuredBuffer< struct /func()/Inl >" + Style.RESET_ALL)
+                    print(f"{Foreground.RED}Couldn't verify symbol /func()/sbInl is of type ?StructuredBuffer< struct /func()/Inl >{Style.RESET_ALL}")
                 else:
-                    print(Style.BRIGHT + "/func()/sbInl is of type ?StructuredBuffer< struct /fubc/Inl >. great !" + Style.RESET_ALL)
+                    print(f"{Style.BRIGHT}/func()/sbInl is of type ?StructuredBuffer< struct /func()/Inl >. great !{Style.RESET_ALL}")
 
             ok = ok and ok2 and ok3 and ok4 and ok5 and ok6
 
         except Exception as e:
-            print(Foreground.RED + "Err: Parsed --dumpsym dictionary didn't record /func()/d symbol ?" + Style.RESET_ALL, e)
+            print(f"{Foreground.RED}Err: Parsed --dumpsym dictionary didn't record /func()/d symbol ?{Style.RESET_ALL}", e)
             ok = False
     return ok
 

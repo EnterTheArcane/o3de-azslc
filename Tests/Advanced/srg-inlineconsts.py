@@ -9,36 +9,37 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify_ok(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--srg", "--root-const=52"])
+def verify_ok(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--srg", "--root-const=52"])
 
     if ok:
-        predicates = []
+        predicates = [
 
-        predicates.append(lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["count"] == 1)
-        predicates.append(lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["index"] == 0)
-        predicates.append(lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["space"] == 0)
-        predicates.append(lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["usage"] == "Read")
-        predicates.append(lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["sizeInBytes"] == 60)
-        predicates.append(lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["id"] == "Root_Constants")
+            lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["count"] == 1,
+            lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["index"] == 0,
+            lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["space"] == 0,
+            lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["usage"] == "Read",
+            lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["sizeInBytes"] == 60,
+            lambda: j["RootConstantBuffer"]["bufferForRootConstants"]["id"] == "Root_Constants",
+        ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "inline const verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}inline const verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return True if ok else False
 
 
-def verify_zero_ok(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--srg", "--root-const=0"])
+def verify_zero_ok(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--srg", "--root-const=0"])
 
     return True if ok else False
 
 
-def verify_zero_fails(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--srg", "--root-const=0"])
+def verify_zero_fails(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--srg", "--root-const=0"])
 
     return True if not ok else False
 

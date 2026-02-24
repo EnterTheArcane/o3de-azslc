@@ -9,12 +9,12 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify_input_layouts(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--ia"])
+def verify_input_layouts(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--ia"])
 
     if ok:
         predicates = [
@@ -33,8 +33,8 @@ def verify_input_layouts(thefile, compiler_path, silent):
             lambda: "numthreads" not in j["inputLayouts"][4].keys(),
         ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "input assembler layouts verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}input assembler layouts verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
 
     return ok
 

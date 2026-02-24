@@ -9,45 +9,46 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 
-def verify(thefile, compiler_path, silent):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--namespace=vk", "--srg", "--max-spaces=2"])
+def verify(file, compiler_path, silent):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--namespace=vk", "--srg", "--max-spaces=2"])
 
     if ok:
-        predicates = []
+        predicates = [
 
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["index"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["space"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["index-merged"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["space-merged"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["index"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["space"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["index-merged"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["space-merged"] == 0)
+            lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["index"] == 0,
+            lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["space"] == 0,
+            lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["index-merged"] == 0,
+            lambda: j["ShaderResourceGroups"][0]["bufferForSRGConstants"]["space-merged"] == 0,
+            lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["index"] == 0,
+            lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["space"] == 0,
+            lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["index-merged"] == 0,
+            lambda: j["ShaderResourceGroups"][0]["inputsForSamplers"][0]["space-merged"] == 0,
 
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["index"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["space"] == 1)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["index-merged"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["space-merged"] == 1)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["index"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["space"] == 1)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["index-merged"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["space-merged"] == 1)
+            lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["index"] == 0,
+            lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["space"] == 1,
+            lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["index-merged"] == 0,
+            lambda: j["ShaderResourceGroups"][1]["bufferForSRGConstants"]["space-merged"] == 1,
+            lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["index"] == 0,
+            lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["space"] == 1,
+            lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["index-merged"] == 0,
+            lambda: j["ShaderResourceGroups"][1]["inputsForSamplers"][0]["space-merged"] == 1,
 
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["index"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["space"] == 2)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["index-merged"] == 1)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["space-merged"] == 1)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["index"] == 0)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["space"] == 2)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["index-merged"] == 1)
-        predicates.append(lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["space-merged"] == 1)
+            lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["index"] == 0,
+            lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["space"] == 2,
+            lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["index-merged"] == 1,
+            lambda: j["ShaderResourceGroups"][2]["bufferForSRGConstants"]["space-merged"] == 1,
+            lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["index"] == 0,
+            lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["space"] == 2,
+            lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["index-merged"] == 1,
+            lambda: j["ShaderResourceGroups"][2]["inputsForSamplers"][0]["space-merged"] == 1,
+        ]
 
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "reflected binding info verification..." + Style.RESET_ALL)
-        ok = compiler.verify_all_predicates(predicates, j)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}reflected binding info verification...{Style.RESET_ALL}")
+        ok = common.verify_all_predicates(predicates, j)
     return True if ok else False
 
 

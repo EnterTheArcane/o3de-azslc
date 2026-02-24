@@ -9,38 +9,39 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
-'''
+"""
 Validates the functionality of the [[pad_to(N)]] attribute for struct, class and SRGs.
-'''
+"""
 
 
-def check_structured_buffer_vs_constant_buffer_padding(thefile, compiler_path, silent, expected_size):
+def check_structured_buffer_vs_constant_buffer_padding(file, compiler_path, silent, expected_size):
     # Compile the shader with --srg and check that the final size of the struct
     # is 256 for both the StructureBuffer<MyStruct> DemoSrg::m_mySB, and MyStruct DemoSrg::m_myStruct
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--srg"])
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--srg"])
     if ok:
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "checkPadding: Verifying struct sizes..." + Style.RESET_ALL)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}check_structured_buffer_vs_constant_buffer_padding: Verifying struct sizes...{Style.RESET_ALL}")
 
-        predicates = []
-        predicates.append(lambda expected=expected_size: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["stride"] == expected)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["type"] == "StructuredBuffer<MyStruct>")
+        predicates = [
+            lambda expected=expected_size: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["stride"] == expected,
+            lambda: j["ShaderResourceGroups"][0]["inputsForBufferViews"][0]["type"] == "StructuredBuffer<MyStruct>",
 
-        predicates.append(lambda expected=expected_size: j["ShaderResourceGroups"][0]["inputsForSRGConstants"][27]["constantByteSize"] == expected)
-        predicates.append(lambda: j["ShaderResourceGroups"][0]["inputsForSRGConstants"][27]["typeName"] == "/MyStruct")
+            lambda expected=expected_size: j["ShaderResourceGroups"][0]["inputsForSRGConstants"][27]["constantByteSize"] == expected,
+            lambda: j["ShaderResourceGroups"][0]["inputsForSRGConstants"][27]["typeName"] == "/MyStruct",
+        ]
 
-        ok = compiler.verify_all_predicates(predicates, j, silent)
+        ok = common.verify_all_predicates(predicates, j, silent)
         if ok and not silent:
-            print(Style.BRIGHT + "OK! " + str(len(predicates)) + " checkPadding: All sizes were the same." + Style.RESET_ALL)
+            print(f"{Style.BRIGHT}OK! {len(predicates)} check_structured_buffer_vs_constant_buffer_padding: All sizes were the same.{Style.RESET_ALL}")
     return ok
 
 
-def check_srg_padding(thefile, compiler_path, silent, expected_size):
-    j, ok = compiler.build_and_get_json(thefile, compiler_path, silent, ["--srg"])
+def check_srg_padding(file, compiler_path, silent, expected_size):
+    j, ok = common.build_and_get_json(file, compiler_path, silent, ["--srg"])
     if ok:
-        if not silent: print(Foreground.CYAN + Style.BRIGHT + "check_SRG_Padding: Verifying SRG sizes..." + Style.RESET_ALL)
+        if not silent: print(f"{Foreground.CYAN}{Style.BRIGHT}check_srg_padding: Verifying SRG sizes...{Style.RESET_ALL}")
 
         # The offset + size of the last variable in each SRG must match the value of @expectedSize.
         srg1_last_variable_offset = j["ShaderResourceGroups"][0]["inputsForSRGConstants"][-1]["constantByteOffset"]
@@ -54,10 +55,10 @@ def check_srg_padding(thefile, compiler_path, silent, expected_size):
         ok = (srg1_size == srg2_size) and (srg1_size == expected_size)
         if not ok and not silent:
             error_msg = f"Was expecting both SRG sizes to be {expected_size}, instead got SRG1 size={srg1_size} and SRG2 size={srg2_size}"
-            print(Foreground.RED + "FAIL (" + error_msg + "):" + Style.RESET_ALL)
+            print(f"{Foreground.RED}FAIL ({error_msg}):{Style.RESET_ALL}")
 
         if ok and not silent:
-            print(Style.BRIGHT + "OK! check_SRG_Padding: All sizes were the same." + Style.RESET_ALL)
+            print(f"{Style.BRIGHT}OK! check_srg_padding: All sizes were the same.{Style.RESET_ALL}")
     return ok
 
 

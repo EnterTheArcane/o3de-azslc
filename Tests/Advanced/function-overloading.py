@@ -9,10 +9,10 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 
 import os
 
-from Shared import compiler
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
-'''  the test looks like this↓ so we want to verify symbols and their references
+"""  the test looks like this↓ so we want to verify symbols and their references
 int func(int i) {..}  // 1
 
 int func(float f) {..}  // 2
@@ -21,12 +21,12 @@ float4 main() : SV_Target0
 {
     g_func(1);  // ref to 1
     g_func(1.5);  // ref to 2
-'''
+"""
 
 
-def exec_test(thefile, compiler_path, silent):
+def exec_test(file, compiler_path, silent):
     """return number of successes"""
-    symbols, ok = compiler.build_and_get_symbols(thefile, compiler_path, silent)
+    symbols, ok = common.build_and_get_symbols(file, compiler_path, silent)
     # check the specific stuff we want to verify with this test
     if ok:
         try:
@@ -55,11 +55,11 @@ def exec_test(thefile, compiler_path, silent):
             ok = ok and symbols["Symbol '/f'"]['references'][0]['line'] == 26
 
             if not ok:
-                print(Style.DIM + Foreground.YELLOW + "ERR: all expected symbol founds, but their semantic understanding seems off" + Style.RESET_ALL)
+                print(f"{Style.DIM}{Foreground.YELLOW}ERR: all expected symbol founds, but their semantic understanding seems off{Style.RESET_ALL}")
             else:
-                print(Style.BRIGHT + "OK! all symbols semantics correctly understood" + Style.RESET_ALL)
+                print(f"{Style.BRIGHT}OK! all symbols semantics correctly understood{Style.RESET_ALL}")
         except Exception as e:
-            print(Foreground.RED + "Err: Parsed --dumpsym may lack some expected keys" + Style.RESET_ALL, e)
+            print(f"{Foreground.RED}Err: Parsed --dumpsym may lack some expected keys{Style.RESET_ALL}", e)
     return 1 if ok else 0
 
 

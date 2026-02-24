@@ -10,9 +10,8 @@ SPDX-License-Identifier: Apache-2.0 OR MIT
 import os
 import os.path
 
-from Shared import compiler
-from Shared import emission
-from Shared.colors import *
+import common
+from common import Foreground, Background, Style
 
 result = 0  # to define for subtests
 result_failed = 0
@@ -34,19 +33,19 @@ def do_tests(compiler, silent):
 
     # expect success when using --unique-idx
     sample_file_path = os.path.abspath(os.path.join(work_dir, "../Semantic/unbounded-arrays-unique-idx-should-pass.azsl"))
-    if emission.verify_emission_patterns(sample_file_path, compiler, silent, ["--unique-idx", "--namespace=dx"]):
+    if common.verify_emission_patterns(sample_file_path, compiler, silent, ["--unique-idx", "--namespace=dx"]):
         result += 1
     else:
         result_failed += 1
 
     # expect success when using --unique-idx
     sample_file_path = os.path.abspath(os.path.join(work_dir, "../Semantic/unbounded-arrays-unique-idx-should-pass-2srgs.azsl"))
-    if emission.verify_emission_patterns(sample_file_path, compiler, silent, ["--unique-idx", "--namespace=dx"]):
+    if common.verify_emission_patterns(sample_file_path, compiler, silent, ["--unique-idx", "--namespace=dx"]):
         result += 1
     else:
         result_failed += 1
 
-    emission.print_failed_test_list(silent)
+    common.print_failed_test_list(silent)
 
 
 if __name__ == "__main__":
