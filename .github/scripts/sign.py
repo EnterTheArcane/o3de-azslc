@@ -69,7 +69,7 @@ def import_certificate_apple():
         run("security", "create-keychain", "-p", keychain_password, keychain_path)
         run("security", "set-keychain-settings", "-lut", "21600", keychain_path)
         run("security", "unlock-keychain", "-p", keychain_password, keychain_path)
-        run("security", "import", cert_path, "-P", password, "-A", "-t", "cert", "-f", "pkcs12", "-k", keychain_path)
+        run("security", "import", cert_path, "-P", password, "-A", "-f", "pkcs12", "-k", keychain_path)
         run("security", "set-key-partition-list", "-S", "apple-tool:,apple:", "-k", keychain_password, keychain_path)
         run("security", "list-keychains", "-d", "user", "-s", keychain_path, "login.keychain-db")
 
